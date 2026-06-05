@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Engineering — Investment Banking & Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#09111f;--surface:#0f1c30;--card:#142037;--card2:#192847;
+  --accent:#3b9eff;--accent2:#00d4aa;--gold:#f5c842;--coral:#ff6b6b;--purple:#a78bfa;--mint:#34d399;
+  --text:#e8edf5;--muted:#7a8ba8;--dim:#3d5068;--border:#1e2f47;
+  --glow:rgba(59,158,255,.09);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;}
+
+/* NAV */
+.top-bar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,17,31,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.brand{padding:11px 22px 0;font-family:'Fraunces',serif;font-size:13px;font-weight:800;color:var(--accent);letter-spacing:.3px;display:flex;align-items:center;gap:8px;}
+.brand span{color:var(--muted);font-size:11px;font-weight:400;font-family:'Sora',sans-serif;}
+.tabs{display:flex;overflow-x:auto;padding:6px 14px;gap:2px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:7px 14px;border-radius:8px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .25s;border:1px solid transparent;white-space:nowrap;letter-spacing:.2px;}
+.tab:hover{color:var(--text);background:var(--card);}
+.tab.on{color:var(--accent);background:var(--glow);border-color:rgba(59,158,255,.25);}
+
+/* PAGES */
+.wrap{margin-top:86px;height:calc(100vh - 86px);overflow:hidden;}
+.page{display:none;height:100%;overflow-y:auto;padding:30px 22px 70px;}
+.page.on{display:block;}
+.inner{max-width:860px;margin:0 auto;}
+
+/* TYPE */
+h1{font-family:'Fraunces',serif;font-size:34px;font-weight:800;line-height:1.15;margin-bottom:6px;}
+h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--accent);margin:34px 0 12px;}
+h3{font-size:15px;font-weight:600;color:var(--accent2);margin:20px 0 8px;}
+p,li{font-size:14px;line-height:1.8;margin-bottom:8px;color:var(--text);}
+.sub{font-size:15px;color:var(--muted);margin-bottom:28px;line-height:1.65;}
+
+/* CARDS */
+.c{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin:16px 0;}
+.c:hover{border-color:rgba(59,158,255,.2);}
+.c.hl{border-left:4px solid var(--accent);}
+.c.gold{border-left:4px solid var(--gold);}
+.c.red{border-left:4px solid var(--coral);}
+.c.green{border-left:4px solid var(--mint);}
+.c.purple{border-left:4px solid var(--purple);}
+.c.teal{border-left:4px solid var(--accent2);}
+
+/* TAGS */
+.tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:3px 8px;border-radius:5px;margin-bottom:10px;}
+.t-blue{background:rgba(59,158,255,.12);color:var(--accent);}
+.t-gold{background:rgba(245,200,66,.12);color:var(--gold);}
+.t-red{background:rgba(255,107,107,.12);color:var(--coral);}
+.t-green{background:rgba(52,211,153,.12);color:var(--mint);}
+.t-purple{background:rgba(167,139,250,.12);color:var(--purple);}
+.t-teal{background:rgba(0,212,170,.12);color:var(--accent2);}
+
+/* CODE */
+.code{background:#060d1a;border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0;overflow-x:auto;position:relative;}
+.code code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.75;color:var(--text);white-space:pre;}
+.lang{position:absolute;top:7px;right:12px;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--dim);text-transform:uppercase;}
+.kw{color:#c792ea;}.fn{color:#82aaff;}.str{color:#c3e88d;}.cm{color:#4a6070;}.num{color:#f78c6c;}.prompt-k{color:var(--gold);}
+
+/* FORMULA BOX */
+.formula{background:#060d1a;border:1px solid var(--border);border-radius:10px;padding:14px 20px;margin:12px 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:.3px;}
+
+/* EXAMPLE */
+.ex{background:linear-gradient(135deg,rgba(59,158,255,.04),rgba(0,212,170,.03));border:1px solid rgba(59,158,255,.15);border-radius:14px;padding:20px;margin:16px 0;}
+.ex-title{font-size:13.5px;font-weight:700;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+
+/* PROMPT BOX */
+.prompt-box{background:#060d1a;border:1px solid rgba(245,200,66,.2);border-radius:10px;padding:16px 18px;margin:12px 0;}
+.prompt-box .label{font-size:9.5px;font-weight:700;letter-spacing:1.2px;color:var(--gold);text-transform:uppercase;margin-bottom:7px;}
+.prompt-box p{font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.75;color:#d4e0f0;margin:0;}
+
+/* RESPONSE BOX */
+.resp-box{background:#060d1a;border:1px solid rgba(0,212,170,.2);border-radius:10px;padding:16px 18px;margin:12px 0;}
+.resp-box .label{font-size:9.5px;font-weight:700;letter-spacing:1.2px;color:var(--accent2);text-transform:uppercase;margin-bottom:7px;}
+.resp-box p{font-size:13px;line-height:1.75;color:#c8d8ec;margin:0;}
+
+/* TABLE */
+.tb{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
+.tb th{background:var(--card2);color:var(--accent);padding:9px 12px;text-align:left;font-weight:600;font-size:11.5px;letter-spacing:.4px;border-bottom:2px solid var(--border);}
+.tb td{padding:9px 12px;border-bottom:1px solid var(--border);}
+.tb tr:hover td{background:rgba(59,158,255,.03);}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0;}
+.gc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.gc.good{border-top:3px solid var(--mint);}
+.gc.bad{border-top:3px solid var(--coral);}
+.gc h4{font-size:13px;font-weight:700;margin-bottom:8px;}
+.gc.good h4{color:var(--mint);}
+.gc.bad h4{color:var(--coral);}
+.gc ul{padding-left:16px;}
+.gc li{font-size:12.5px;margin-bottom:5px;color:var(--muted);}
+
+/* STEPS */
+.steps{counter-reset:s;list-style:none;padding:0;}
+.steps li{counter-increment:s;padding:12px 12px 12px 52px;position:relative;margin-bottom:6px;border-radius:10px;background:var(--card);border:1px solid var(--border);}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:12px;width:26px;height:26px;background:var(--glow);border:1px solid rgba(59,158,255,.22);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--accent);}
+
+/* FLOW */
+.flow{display:flex;align-items:center;gap:6px;margin:16px 0;flex-wrap:wrap;}
+.fb{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;text-align:center;}
+.fa{color:var(--accent);font-size:18px;}
+
+/* BADGES */
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+.badge{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;flex:1;min-width:100px;text-align:center;}
+.badge .v{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--accent);}
+.badge .l{font-size:10.5px;color:var(--muted);margin-top:3px;}
+
+/* QUIZ */
+.qz{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin:16px 0;}
+.qz .qt{font-weight:600;font-size:14px;margin-bottom:12px;}
+.qo{display:block;padding:9px 13px;margin:4px 0;border-radius:8px;border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;}
+.qo:hover{border-color:var(--accent);color:var(--text);}
+.qo.ok{border-color:var(--mint);background:rgba(52,211,153,.07);color:var(--mint);}
+.qo.no{border-color:var(--coral);background:rgba(255,107,107,.07);color:var(--coral);}
+.qf{display:none;margin-top:10px;padding:10px 13px;border-radius:8px;font-size:12.5px;line-height:1.65;}
+.qf.show{display:block;}
+.qf.r{background:rgba(52,211,153,.07);color:var(--mint);}
+.qf.w{background:rgba(255,107,107,.07);color:var(--coral);}
+
+/* SCENARIO CARD */
+.scenario{background:var(--card2);border:1px solid var(--dim);border-radius:12px;padding:18px;margin:12px 0;}
+.scenario h4{color:var(--gold);font-size:13px;font-weight:700;margin-bottom:10px;}
+
+/* PROGRESS BAR */
+.pbar{position:fixed;bottom:0;left:0;height:3px;background:var(--accent);transition:width .15s;z-index:100;}
+
+/* IB TOOL PILL */
+.tool-pill{display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--dim);border-radius:20px;padding:5px 12px;font-size:12px;margin:4px;color:var(--text);}
+.tool-pill .dot{width:7px;height:7px;border-radius:50%;}
+
+/* BEFORE/AFTER */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.ba-card{border-radius:10px;padding:14px;}
+.ba-before{background:rgba(255,107,107,.05);border:1px solid rgba(255,107,107,.2);}
+.ba-after{background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.2);}
+.ba-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.ba-before .ba-label{color:var(--coral);}
+.ba-after .ba-label{color:var(--mint);}
+
+/* HIGHLIGHT */
+.hi{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.18);border-radius:8px;padding:3px 7px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--gold);}
+
+@media(max-width:700px){
+  h1{font-size:24px;}h2{font-size:19px;}
+  .g2,.g3,.ba-grid{grid-template-columns:1fr;}
+  .page{padding:20px 14px 60px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-bar">
+  <div class="brand">🏦 Prompt Engineering — Investment Banking &amp; Finance <span>3-Hour Intensive · Beginner Friendly</span></div>
+  <div class="tabs" id="tabNav"></div>
+</nav>
+
+<div class="wrap">
+
+<!-- ===== PAGE 0: OVERVIEW ===== -->
+<div class="page" id="p0">
+<div class="inner">
+  <h1>Prompt Engineering</h1>
+  <p class="sub">3-hour intensive for finance &amp; investment banking students. Learn how to talk to AI so it delivers exactly what you need — from DCF models to pitch decks.</p>
+
+  <h2>What You Will Learn Today</h2>
+  <div class="flow">
+    <div class="fb" style="border-color:var(--accent);">Language Models</div>
+    <div class="fa">→</div>
+    <div class="fb" style="border-color:var(--accent2);">Prompt Techniques</div>
+    <div class="fa">→</div>
+    <div class="fb" style="border-color:var(--gold);">AI Tools in IB</div>
+    <div class="fa">→</div>
+    <div class="fb" style="border-color:var(--purple);">Excel + Macros</div>
+    <div class="fa">→</div>
+    <div class="fb" style="border-color:var(--mint);">Hands-on Practice</div>
+  </div>
+
+  <h2>Session Agenda (3 Hours)</h2>
+  <table class="tb">
+    <tr><th>Time</th><th>Topic</th><th>Activity</th></tr>
+    <tr><td><strong>0:00–0:30</strong></td><td>Introduction to Language Models</td><td>Concept + Demo</td></tr>
+    <tr><td><strong>0:30–1:00</strong></td><td>Best Practices to Write Prompts</td><td>Live Examples</td></tr>
+    <tr><td><strong>1:00–1:30</strong></td><td>Prompt Types &amp; Model Types</td><td>Hands-on Workshop</td></tr>
+    <tr><td><strong>1:30–1:45</strong></td><td>☕ Break</td><td>—</td></tr>
+    <tr><td><strong>1:45–2:15</strong></td><td>AI in Investment Banking &amp; Finance</td><td>Tool Demos</td></tr>
+    <tr><td><strong>2:15–2:40</strong></td><td>Excel + Macros + Gamma Presentations</td><td>Worksheet Practice</td></tr>
+    <tr><td><strong>2:40–3:00</strong></td><td>Assignments + Q&amp;A</td><td>Group Discussion</td></tr>
+  </table>
+
+  <div class="c hl">
+    <span class="tag t-blue">Why This Matters in Finance</span>
+    <p>AI is already reshaping investment banking. Analysts use it to automate DCF models, summarize 300-page prospectuses, draft client emails, generate PowerPoint decks, and screen hundreds of startups in minutes. Those who master prompt engineering will work <strong>10x faster</strong> than those who don't.</p>
+  </div>
+
+  <h2>Real Finance Use Cases We'll Cover</h2>
+  <div class="g3">
+    <div class="gc">
+      <h4 style="color:var(--accent);">📧 Email Writing</h4>
+      <ul><li>Cover letters</li><li>Client outreach</li><li>Leave requests</li><li>Deal summaries</li></ul>
+    </div>
+    <div class="gc">
+      <h4 style="color:var(--gold);">📊 Excel &amp; Data</h4>
+      <ul><li>Formula generation</li><li>VBA Macros</li><li>Salary data analysis</li><li>Financial models</li></ul>
+    </div>
+    <div class="gc">
+      <h4 style="color:var(--accent2);">🏦 IB-Specific Tools</h4>
+      <ul><li>Pitch deck analysis</li><li>VC fund tools</li><li>Portfolio analytics</li><li>Stock screening</li></ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 1: LANGUAGE MODELS ===== -->
+<div class="page" id="p1">
+<div class="inner">
+  <h1>Introduction to Language Models</h1>
+  <p class="sub">Before you can master prompts, you need to understand what's happening "under the hood" — even at a beginner level.</p>
+
+  <h2>What Is a Language Model?</h2>
+  <p>Think of a language model as an extremely well-read assistant who has read billions of documents — textbooks, research papers, financial reports, news articles, and code. When you give it a starting sentence (a "prompt"), it predicts the most helpful continuation based on everything it has learned.</p>
+
+  <div class="c hl">
+    <span class="tag t-blue">Simple Analogy</span>
+    <p>Imagine playing a word-guessing game: you say <em>"The stock market ___"</em> and everyone guesses the next word. A language model is like a player who has read millions of finance books and can very accurately predict: "...fell 3% today due to rising interest rates."</p>
+  </div>
+
+  <h2>How Does a Prompt Work?</h2>
+  <div class="formula">Prompt = Instructions + Context + Examples + Output Format</div>
+
+  <div class="ex">
+    <div class="ex-title">🎓 Finance Example — Same goal, different prompts</div>
+    <div class="prompt-box">
+      <div class="label">❌ Vague Prompt</div>
+      <p>Tell me about DCF.</p>
+    </div>
+    <div class="resp-box">
+      <div class="label">AI Response (Generic)</div>
+      <p>Discounted Cash Flow (DCF) is a valuation method used to estimate the value of an investment based on expected future cash flows...</p>
+    </div>
+    <div style="margin:10px 0;text-align:center;color:var(--dim);font-size:20px;">↓</div>
+    <div class="prompt-box">
+      <div class="label">✅ Precise Prompt</div>
+      <p>You are a senior investment banking analyst at Goldman Sachs. Explain DCF valuation to a 1st-year analyst using a simple 3-year example with a tech startup generating $1M, $1.5M, $2M in free cash flows. Use a 10% discount rate. Show the calculation step by step.</p>
+    </div>
+    <div class="resp-box">
+      <div class="label">AI Response (Specific &amp; Actionable)</div>
+      <p>Year 1: PV = $1M / (1.10)¹ = $909,090 | Year 2: PV = $1.5M / (1.10)² = $1,239,669 | Year 3: PV = $2M / (1.10)³ = $1,502,629 | Total DCF Value = $3,651,388...</p>
+    </div>
+  </div>
+
+  <h2>Popular AI Models You'll Use</h2>
+  <table class="tb">
+    <tr><th>Model</th><th>Company</th><th>Best For</th><th>Access</th></tr>
+    <tr><td><strong>ChatGPT (GPT-4)</strong></td><td>OpenAI</td><td>General tasks, Excel formulas, email drafts</td><td>chat.openai.com</td></tr>
+    <tr><td><strong>Claude</strong></td><td>Anthropic</td><td>Long documents, analysis, nuanced writing</td><td>claude.ai</td></tr>
+    <tr><td><strong>Gemini</strong></td><td>Google</td><td>Research, Google Workspace integration</td><td>gemini.google.com</td></tr>
+    <tr><td><strong>Gamma</strong></td><td>Gamma.app</td><td>Presentations and slide decks</td><td>gamma.app</td></tr>
+    <tr><td><strong>DALL-E 3</strong></td><td>OpenAI</td><td>Image generation (marketing graphics)</td><td>via ChatGPT Plus</td></tr>
+    <tr><td><strong>HeyGen</strong></td><td>HeyGen</td><td>AI video with avatars (pitch videos)</td><td>heygen.com</td></tr>
+  </table>
+
+  <h2>Key Vocabulary for Today</h2>
+  <div class="c teal">
+    <span class="tag t-teal">Glossary</span>
+    <table class="tb">
+      <tr><th>Term</th><th>What It Means</th><th>Finance Analogy</th></tr>
+      <tr><td><strong>Prompt</strong></td><td>Your input to the AI</td><td>Like a brief you give a junior analyst</td></tr>
+      <tr><td><strong>Token</strong></td><td>A word/part of a word the AI processes</td><td>Like characters in a Bloomberg terminal limit</td></tr>
+      <tr><td><strong>Context Window</strong></td><td>How much text AI can "remember" in one session</td><td>Like your working memory during a live deal</td></tr>
+      <tr><td><strong>Hallucination</strong></td><td>AI confidently states incorrect facts</td><td>Like a junior analyst who makes up numbers</td></tr>
+      <tr><td><strong>Temperature</strong></td><td>How creative/random the AI is (0=strict, 1=creative)</td><td>Like the risk appetite on a trade</td></tr>
+    </table>
+  </div>
+
+  <div class="c red">
+    <span class="tag t-red">⚠️ Critical Warning for Finance Students</span>
+    <p>AI can <strong>hallucinate financial data</strong> — it may invent stock prices, revenue figures, or legal clauses that sound real but are wrong. <strong>Always verify</strong> numbers from Bloomberg, FactSet, or official filings. Never submit AI-generated financials to a client without fact-checking.</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 2: BEST PRACTICES ===== -->
+<div class="page" id="p2">
+<div class="inner">
+  <h1>Best Practices to Write Prompts</h1>
+  <p class="sub">Eight proven techniques that will immediately improve every prompt you write.</p>
+
+  <h2>The CRISP Framework</h2>
+  <div class="formula">C — Context &nbsp;|&nbsp; R — Role &nbsp;|&nbsp; I — Instructions &nbsp;|&nbsp; S — Style &nbsp;|&nbsp; P — Purpose</div>
+
+  <div class="ex">
+    <div class="ex-title">🏦 Applying CRISP — Cover Letter Example</div>
+    <div class="prompt-box">
+      <div class="label">Basic Prompt (no CRISP)</div>
+      <p>Write a cover letter for an equity research job.</p>
+    </div>
+    <div class="prompt-box">
+      <div class="label">CRISP Prompt — Much Better</div>
+      <p><span class="prompt-k">[ROLE]</span> You are a professional career coach specializing in investment banking.<br><span class="prompt-k">[CONTEXT]</span> The applicant is a 5-year equity research analyst at a mid-size firm with CFA Level 2, specializing in TMT sector.<br><span class="prompt-k">[INSTRUCTIONS]</span> Write a compelling cover letter for a Senior Equity Research Analyst position at Morgan Stanley.<br><span class="prompt-k">[STYLE]</span> Professional, confident, concise — 3 paragraphs, under 300 words.<br><span class="prompt-k">[PURPOSE]</span> The goal is to highlight TMT expertise and get an interview callback.</p>
+    </div>
+  </div>
+
+  <h2>The 8 Rules of Effective Prompting</h2>
+
+  <ol class="steps">
+    <li>
+      <strong>Be Specific About the Outcome</strong>
+      <div class="ba-grid" style="margin-top:10px;">
+        <div class="ba-card ba-before"><div class="ba-label">❌ Vague</div><p style="font-size:12.5px;margin:0;">"Explain financial modelling"</p></div>
+        <div class="ba-card ba-after"><div class="ba-label">✅ Specific</div><p style="font-size:12.5px;margin:0;">"Explain a 3-statement financial model to a first-year IB analyst. Include what each statement is and how they connect. Use bullet points."</p></div>
+      </div>
+    </li>
+    <li>
+      <strong>Assign a Role to the AI</strong>
+      <div class="ba-grid" style="margin-top:10px;">
+        <div class="ba-card ba-before"><div class="ba-label">❌ No Role</div><p style="font-size:12.5px;margin:0;">"Review this pitch deck"</p></div>
+        <div class="ba-card ba-after"><div class="ba-label">✅ With Role</div><p style="font-size:12.5px;margin:0;">"You are a Senior VC Partner at Sequoia Capital with 15 years of experience. Review this pitch deck from the investor's perspective. Focus on market size, team strength, and unit economics."</p></div>
+      </div>
+    </li>
+    <li>
+      <strong>Specify Format &amp; Length</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:var(--muted);">Add: "Respond in a table", "Use bullet points", "Max 200 words", "Include examples for each point"</p>
+    </li>
+    <li>
+      <strong>Use Positive Language</strong>
+      <div class="ba-grid" style="margin-top:10px;">
+        <div class="ba-card ba-before"><div class="ba-label">❌ Negative</div><p style="font-size:12.5px;margin:0;">"Don't make it too long and don't use jargon"</p></div>
+        <div class="ba-card ba-after"><div class="ba-label">✅ Positive</div><p style="font-size:12.5px;margin:0;">"Keep it under 150 words. Use plain language that a non-finance person can understand."</p></div>
+      </div>
+    </li>
+    <li>
+      <strong>Provide Examples (Few-Shot Prompting)</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:var(--muted);">Give the AI 1-2 examples of what good output looks like. "Write a deal summary like this example: [your example]. Now do it for: [new deal]"</p>
+    </li>
+    <li>
+      <strong>Use Delimiters to Structure Your Prompt</strong>
+      <div class="code"><span class="lang">Prompt Structure</span><code>Use """ or ### to separate sections:
+
+Analyze the following company:
+"""
+Company: TechStart Inc.
+Revenue: $5M (2023)
+Industry: SaaS B2B
+Stage: Series A
+"""
+Provide a 5-bullet investment thesis from a VC perspective.</code></div>
+    </li>
+    <li>
+      <strong>Ask for Step-by-Step Reasoning (Chain of Thought)</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:var(--muted);">Add "Think step by step", "Walk me through your reasoning", or "Show your work" — especially for financial calculations.</p>
+    </li>
+    <li>
+      <strong>Iterate &amp; Refine</strong>
+      <p style="margin:4px 0 0;font-size:13px;color:var(--muted);">Prompting is a conversation. If the first response isn't right, say "Make it more formal", "Add more numbers", or "Shorten the second paragraph". You don't need to start over.</p>
+    </li>
+  </ol>
+
+  <h2>Common Prompting Mistakes in Finance</h2>
+  <table class="tb">
+    <tr><th>Mistake</th><th>Example</th><th>Fix</th></tr>
+    <tr><td>Too generic</td><td>"Analyze this company"</td><td>Specify: industry, metrics to focus on, output format</td></tr>
+    <tr><td>No time frame</td><td>"Write about market trends"</td><td>"Summarize Q3 2024 market trends in US equities"</td></tr>
+    <tr><td>Trusting numbers blindly</td><td>Using AI-generated revenue figures in a model</td><td>Always verify from official sources</td></tr>
+    <tr><td>Single shot</td><td>Giving up after one bad response</td><td>Refine iteratively — treat it like a conversation</td></tr>
+    <tr><td>Ignoring tone</td><td>Submitting "casual" AI text to a client</td><td>Always specify: "formal", "client-ready", "professional"</td></tr>
+  </table>
+</div>
+</div>
+
+<!-- ===== PAGE 3: MODEL TYPES ===== -->
+<div class="page" id="p3">
+<div class="inner">
+  <h1>Types of AI Models</h1>
+  <p class="sub">Different AI models take different inputs. Understanding which model to use for what task is a key skill.</p>
+
+  <h2>Text-to-Text Models</h2>
+  <p>You type text → AI produces text. The most common type in finance.</p>
+  <div class="c hl">
+    <div class="g2">
+      <div>
+        <h3>Best For in Finance:</h3>
+        <ul style="padding-left:16px;">
+          <li>Writing and editing client emails</li>
+          <li>Summarizing earnings calls or 10-K filings</li>
+          <li>Drafting investment memos</li>
+          <li>Generating Excel formulas</li>
+          <li>Answering regulatory questions</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Tools:</h3>
+        <div><span class="tool-pill"><span class="dot" style="background:var(--mint);"></span>ChatGPT</span></div>
+        <div><span class="tool-pill"><span class="dot" style="background:var(--accent);"></span>Claude</span></div>
+        <div><span class="tool-pill"><span class="dot" style="background:var(--gold);"></span>Google Gemini</span></div>
+        <div><span class="tool-pill"><span class="dot" style="background:var(--purple);"></span>Meta Llama</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title">🎓 Practical Exercise — Email Writing</div>
+    <p>Based on the class worksheet, try this prompt with ChatGPT:</p>
+    <div class="prompt-box">
+      <div class="label">Assignment Prompt (from your worksheet)</div>
+      <p>You're an equity research analyst who has 5 years of experience in the industry. Write a professional cover letter to apply for a Senior Equity Research Analyst position at a top-tier investment bank. Highlight: relevant experience, key accomplishments, sector expertise (choose one), and your motivation for this specific role. Format: 3 paragraphs, 250 words maximum, formal tone.</p>
+    </div>
+  </div>
+
+  <h2>Text-to-Image Models</h2>
+  <p>You describe an image → AI generates it. Useful in finance for marketing materials, pitch decks, and presentations.</p>
+
+  <div class="c gold">
+    <span class="tag t-gold">Finance Applications</span>
+    <div class="g3">
+      <div style="text-align:center;padding:10px;">
+        <div style="font-size:24px;margin-bottom:5px;">📊</div>
+        <p style="font-size:12.5px;color:var(--muted);margin:0;">Marketing graphics for investor reports</p>
+      </div>
+      <div style="text-align:center;padding:10px;">
+        <div style="font-size:24px;margin-bottom:5px;">🏢</div>
+        <p style="font-size:12.5px;color:var(--muted);margin:0;">Cover images for pitch decks and proposals</p>
+      </div>
+      <div style="text-align:center;padding:10px;">
+        <div style="font-size:24px;margin-bottom:5px;">📱</div>
+        <p style="font-size:12.5px;color:var(--muted);margin:0;">Social media visuals for fund announcements</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title">🖼️ Workshop: Text-to-Image for Finance</div>
+    <div class="prompt-box">
+      <div class="label">Try in DALL-E (via ChatGPT) or Midjourney</div>
+      <p>Create a professional, minimalist infographic illustration of a venture capital investment funnel. Show stages: Deal Flow → Due Diligence → Term Sheet → Closing. Use dark blue and gold color palette. Clean corporate style, no text in image.</p>
+    </div>
+    <p style="margin-top:10px;font-size:13px;color:var(--muted);">Note: Always specify <span class="hi">corporate style</span>, <span class="hi">color palette</span>, and <span class="hi">no text in image</span> for professional outputs.</p>
+  </div>
+
+  <h2>Text-to-Video Models</h2>
+  <p>For finance, these are powerful for creating pitch video avatars, educational content, and company explainer videos without a camera.</p>
+
+  <div class="c teal">
+    <span class="tag t-teal">HeyGen — Key Use Cases in Finance</span>
+    <table class="tb">
+      <tr><th>Use Case</th><th>How to Use</th></tr>
+      <tr><td>Startup founder pitch video</td><td>Upload pitch script → AI avatar presents it professionally</td></tr>
+      <tr><td>Fund manager update</td><td>Quarterly LP update without scheduling a video call</td></tr>
+      <tr><td>Training materials</td><td>HR onboarding or compliance training videos at scale</td></tr>
+    </table>
+  </div>
+
+  <h2>Which Model for Which Finance Task?</h2>
+  <table class="tb">
+    <tr><th>Task</th><th>Best Tool</th><th>Prompt Tip</th></tr>
+    <tr><td>Write an investor email</td><td>ChatGPT / Claude</td><td>Specify role, recipient seniority, and tone</td></tr>
+    <tr><td>Summarize a 100-page prospectus</td><td>Claude (long context)</td><td>"Summarize in 10 bullets focusing on risks and financials"</td></tr>
+    <tr><td>Build an Excel formula</td><td>ChatGPT</td><td>Describe your data layout first</td></tr>
+    <tr><td>Create a pitch deck</td><td>Gamma.app</td><td>Give full topic outline with required sections</td></tr>
+    <tr><td>Generate a fund overview image</td><td>DALL-E / Midjourney</td><td>Include style, colors, and "no text in image"</td></tr>
+    <tr><td>Founder pitch video</td><td>HeyGen</td><td>Write script first, then upload to HeyGen</td></tr>
+  </table>
+</div>
+</div>
+
+<!-- ===== PAGE 4: EXCEL + MACROS ===== -->
+<div class="page" id="p4">
+<div class="inner">
+  <h1>AI + Excel &amp; Macros</h1>
+  <p class="sub">The highest-ROI skill in this session. You'll save hours every week by letting AI write your formulas and automate repetitive tasks.</p>
+
+  <h2>Why Excel + AI Is a Game-Changer in Finance</h2>
+  <p>Junior analysts at investment banks spend 40-60% of their time in Excel. AI can generate complex formulas instantly, write VBA macros, debug errors, and explain what any formula does — cutting that time dramatically.</p>
+
+  <h2>Part A: AI Formula Generation</h2>
+
+  <div class="ex">
+    <div class="ex-title">📋 Using the Class Worksheet (HR Salary Dataset)</div>
+    <p>Your worksheet has employee data: Name, Job Title, Department, Salary, Bonus %, Country, Hire Date. Let's use ChatGPT to answer business questions.</p>
+  </div>
+
+  <h3>Exercise 1 — Basic Formulas</h3>
+  <div class="c hl">
+    <span class="tag t-blue">Prompt Template for Excel Formulas</span>
+    <div class="prompt-box">
+      <div class="label">Prompt</div>
+      <p>I have an Excel spreadsheet with these columns: A=Full Name, B=Job Title, C=Department, D=Business Unit, E=Gender, F=Ethnicity, G=Age, H=Hire Date, I=Annual Salary, J=Bonus%, K=Country, L=City, M=Exit Date. Data starts from row 2.<br><br>Write an Excel formula to: [YOUR TASK HERE]</p>
+    </div>
+  </div>
+
+  <table class="tb">
+    <tr><th>What You Want</th><th>Prompt to Add</th><th>Formula You'll Get</th></tr>
+    <tr><td>Average salary in Finance dept</td><td>"Calculate the average annual salary only for employees in the Finance department"</td><td>=AVERAGEIF(C:C,"Finance",I:I)</td></tr>
+    <tr><td>Count employees in US</td><td>"Count employees whose country is United States"</td><td>=COUNTIF(K:K,"United States")</td></tr>
+    <tr><td>Total bonus payout</td><td>"Calculate total bonus payout: sum of (Annual Salary × Bonus%) for all employees"</td><td>=SUMPRODUCT(I2:I1000,J2:J1000)</td></tr>
+    <tr><td>Years at company</td><td>"Calculate how many years each employee has been at the company from their Hire Date to today"</td><td>=DATEDIF(H2,TODAY(),"Y")</td></tr>
+    <tr><td>Flag active employees</td><td>"Show 'Active' if Exit Date is blank, otherwise 'Left'"</td><td>=IF(ISBLANK(M2),"Active","Left")</td></tr>
+  </table>
+
+  <h3>Exercise 2 — Advanced Analysis Prompt</h3>
+  <div class="prompt-box">
+    <div class="label">Full Analysis Prompt</div>
+    <p>I have an HR salary dataset in Excel with 1000 employees. Columns: Full Name (A), Department (C), Annual Salary (I), Bonus% (J), Country (K), Gender (E).<br><br>Write Excel formulas or a step-by-step guide to answer:<br>1. What is the average salary by department?<br>2. Which department has the highest total payroll?<br>3. What percentage of employees earn over $100,000?<br>4. Is there a salary gap between Male and Female employees?<br><br>Format: Provide each formula with a brief explanation of what it does.</p>
+  </div>
+
+  <h2>Part B: VBA Macros with AI</h2>
+  <p>VBA Macros automate repetitive tasks. Normally you need to know programming — but with ChatGPT, you just describe what you want in plain English.</p>
+
+  <div class="c gold">
+    <span class="tag t-gold">How to Use ChatGPT for Macros (Step by Step)</span>
+    <ol class="steps">
+      <li>Open ChatGPT and describe your task clearly</li>
+      <li>Copy the VBA code it gives you</li>
+      <li>In Excel: Press <span class="hi">Alt + F11</span> to open VBA Editor</li>
+      <li>Click Insert → Module, paste the code</li>
+      <li>Press <span class="hi">F5</span> to run. Done!</li>
+    </ol>
+  </div>
+
+  <h3>Macro Examples for Finance</h3>
+
+  <div class="scenario">
+    <h4>Scenario 1: Auto-format a financial report</h4>
+    <div class="prompt-box">
+      <div class="label">Prompt to ChatGPT</div>
+      <p>Write a VBA macro for Excel that:<br>1. Makes all header cells in Row 1 bold, dark blue background with white text<br>2. Auto-fits all column widths<br>3. Adds alternating row colors (light blue and white) for rows 2 to 100<br>4. Adds a border around the entire data range (A1 to M100)</p>
+    </div>
+    <div class="code"><span class="lang">VBA</span><code><span class="kw">Sub</span> <span class="fn">FormatReport</span>()
+    <span class="cm">' Format headers</span>
+    <span class="kw">With</span> Rows(<span class="num">1</span>)
+        .Font.Bold = <span class="kw">True</span>
+        .Interior.Color = RGB(<span class="num">0</span>, <span class="num">70</span>, <span class="num">127</span>)  <span class="cm">' Dark blue</span>
+        .Font.Color = RGB(<span class="num">255</span>, <span class="num">255</span>, <span class="num">255</span>)  <span class="cm">' White text</span>
+    <span class="kw">End With</span>
+    
+    <span class="cm">' Auto-fit columns</span>
+    Cells.EntireColumn.AutoFit
+    
+    <span class="cm">' Alternating row colors</span>
+    <span class="kw">Dim</span> i <span class="kw">As Integer</span>
+    <span class="kw">For</span> i = <span class="num">2</span> <span class="kw">To</span> <span class="num">100</span>
+        <span class="kw">If</span> i <span class="kw">Mod</span> <span class="num">2</span> = <span class="num">0</span> <span class="kw">Then</span>
+            Rows(i).Interior.Color = RGB(<span class="num">235</span>, <span class="num">244</span>, <span class="num">255</span>)
+        <span class="kw">Else</span>
+            Rows(i).Interior.Color = RGB(<span class="num">255</span>, <span class="num">255</span>, <span class="num">255</span>)
+        <span class="kw">End If</span>
+    <span class="kw">Next</span> i
+<span class="kw">End Sub</span></code></div>
+  </div>
+
+  <div class="scenario">
+    <h4>Scenario 2: Extract high-salary employees</h4>
+    <div class="prompt-box">
+      <div class="label">Prompt</div>
+      <p>Write a VBA macro that copies all employees with Annual Salary over $150,000 from Sheet1 to a new sheet called "HighEarners". Include all columns.</p>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <h4>Scenario 3: Calculate total compensation</h4>
+    <div class="prompt-box">
+      <div class="label">Prompt</div>
+      <p>Write a VBA macro that adds a new column N called "Total Compensation" which calculates Annual Salary + (Annual Salary × Bonus%) for each employee in my dataset.</p>
+    </div>
+  </div>
+
+  <div class="c green">
+    <span class="tag t-green">Pro Tip: Debugging with AI</span>
+    <p>If your macro gives an error, copy the error message and paste it back to ChatGPT: "I ran this VBA code and got this error: [paste error]. How do I fix it?" — AI will debug it for you in seconds.</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 5: GAMMA PRESENTATIONS ===== -->
+<div class="page" id="p5">
+<div class="inner">
+  <h1>Creating Presentations with Gamma AI</h1>
+  <p class="sub">Build professional decks in 3 minutes, not 3 hours. Gamma.app transforms your text outline into visually stunning slides automatically.</p>
+
+  <h2>Why Gamma for Investment Banking?</h2>
+  <div class="c hl">
+    <div class="g3">
+      <div style="text-align:center;padding:12px;">
+        <div style="font-size:26px;margin-bottom:6px;">⚡</div>
+        <p style="font-weight:600;font-size:13px;margin-bottom:3px;">Speed</p>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Full deck in 2-3 minutes vs 3-4 hours in PowerPoint</p>
+      </div>
+      <div style="text-align:center;padding:12px;">
+        <div style="font-size:26px;margin-bottom:6px;">🎨</div>
+        <p style="font-weight:600;font-size:13px;margin-bottom:3px;">Design</p>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Professional layouts generated automatically</p>
+      </div>
+      <div style="text-align:center;padding:12px;">
+        <div style="font-size:26px;margin-bottom:6px;">🔄</div>
+        <p style="font-weight:600;font-size:13px;margin-bottom:3px;">Iteration</p>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Instantly regenerate any slide you don't like</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>Step-by-Step: Using Gamma for a Finance Presentation</h2>
+  <ol class="steps">
+    <li>Go to <strong>gamma.app</strong> and sign in (free account available)</li>
+    <li>Click <strong>"Create New"</strong> → Select <strong>"Generate with AI"</strong></li>
+    <li>Type your topic and the sections you want</li>
+    <li>Gamma generates a full deck — review and edit each slide</li>
+    <li>Customize brand colors, fonts, and add your own charts/data</li>
+    <li>Export as PDF or PowerPoint for client delivery</li>
+  </ol>
+
+  <h2>Class Assignment: Renewable Energy Deck</h2>
+  <div class="c gold">
+    <span class="tag t-gold">Workshop Assignment</span>
+    <p>Use <strong>gamma.app</strong> to create a presentation on: <strong>"Renewable Sources of Energy as an Investment Theme"</strong></p>
+    <p><strong>Required sections:</strong></p>
+    <ul style="padding-left:20px;margin-top:8px;">
+      <li>Definition and Importance of Renewable Energy</li>
+      <li>Solar Energy — market size and key players</li>
+      <li>Wind Energy — growth trends</li>
+      <li>Hydropower</li>
+      <li>Biomass &amp; Geothermal Energy</li>
+      <li>Investment Opportunity: Environmental, Economic, and Security Benefits</li>
+      <li>Risks: Intermittency, Costs, and Policy Considerations</li>
+    </ul>
+  </div>
+
+  <h2>Prompt for Gamma — Finance Pitch Deck</h2>
+  <div class="prompt-box">
+    <div class="label">Finance-Specific Gamma Prompt</div>
+    <p>Create a professional investor pitch deck for a Series A fundraise. Company: GreenFlow Energy, a B2B SaaS platform that helps utilities manage renewable energy grids.<br><br>Include these slides:<br>1. Executive Summary (problem + solution)<br>2. Market Opportunity ($50B TAM)<br>3. Product Demo Overview<br>4. Business Model (SaaS subscription + data licensing)<br>5. Traction: $2M ARR, 15 enterprise clients<br>6. Team: 3 founders with energy + tech backgrounds<br>7. Financial Projections: 3-year revenue forecast<br>8. Ask: Raising $5M, use of funds breakdown<br><br>Tone: Professional, data-driven. Design: Clean corporate with blue/green palette.</p>
+  </div>
+
+  <h2>Comparing Gamma vs PowerPoint</h2>
+  <table class="tb">
+    <tr><th>Feature</th><th>PowerPoint</th><th>Gamma AI</th></tr>
+    <tr><td>Time to create 10-slide deck</td><td>2-4 hours</td><td style="color:var(--mint);">3-5 minutes</td></tr>
+    <tr><td>Design skills needed</td><td>High</td><td style="color:var(--mint);">None</td></tr>
+    <tr><td>Content generation</td><td>Manual</td><td style="color:var(--mint);">AI-generated</td></tr>
+    <tr><td>Custom brand templates</td><td>✅ Yes</td><td>Limited</td></tr>
+    <tr><td>Complex financial charts</td><td>✅ Best</td><td>Basic</td></tr>
+    <tr><td>Client presentations</td><td>✅ Industry standard</td><td>Good for drafts</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--muted);">Best workflow: Use Gamma to create the first draft quickly, then refine final client-facing decks in PowerPoint.</p>
+</div>
+</div>
+
+<!-- ===== PAGE 6: IB TOOLS ===== -->
+<div class="page" id="p6">
+<div class="inner">
+  <h1>AI Tools in Investment Banking &amp; Finance</h1>
+  <p class="sub">The IB ecosystem is rapidly adopting AI. These are the tools you'll encounter on the job — and how to use them effectively.</p>
+
+  <h2>The IB AI Stack</h2>
+  <div class="flow">
+    <div class="fb" style="border-color:var(--accent);">Startups</div>
+    <div class="fa">→</div>
+    <div class="fb" style="border-color:var(--gold);">Pitch Deck Tools</div>
+    <div class="fa">+</div>
+    <div class="fb" style="border-color:var(--accent2);">VC Funds</div>
+    <div class="fa">→</div>
+    <div class="fb" style="border-color:var(--purple);">Portfolio Analytics</div>
+    <div class="fa">+</div>
+    <div class="fb" style="border-color:var(--mint);">Stock Research</div>
+  </div>
+
+  <h2>Tools for Startups — Fundraising Side</h2>
+  <table class="tb">
+    <tr><th>Tool</th><th>What It Does</th><th>How to Use It</th></tr>
+    <tr><td><strong>Pitch Deck Analyzer (ChatGPT Plugin)</strong></td><td>Reviews your pitch deck — scores messaging, financials, clarity</td><td>Upload your deck, ask: "Score my deck on a VC evaluation rubric and suggest improvements"</td></tr>
+    <tr><td><strong>Business Blueprint GPT</strong></td><td>Helps improve business ideas and build execution plans</td><td>"I have a B2B SaaS idea for [X]. Help me build a 12-month operational plan"</td></tr>
+    <tr><td><strong>Lemonade Twist</strong></td><td>B2B marketing, lead gen, customer segmentation</td><td>Great for Series A startups building their sales pipeline</td></tr>
+    <tr><td><strong>Toon CEO Guy</strong></td><td>Product strategy, market research, branding</td><td>"Brainstorm 5 product names for a fintech app targeting Gen Z investors"</td></tr>
+  </table>
+
+  <h3>Practical: Analyze a Pitch Deck with ChatGPT</h3>
+  <div class="prompt-box">
+    <div class="label">Pitch Deck Review Prompt</div>
+    <p>You are a General Partner at a top-tier VC fund with 20 years of experience. Review the following pitch deck summary and score it on these 5 criteria (1-10):<br>1. Problem Clarity<br>2. Market Size &amp; Opportunity<br>3. Team Strength<br>4. Business Model &amp; Unit Economics<br>5. Traction &amp; Milestones<br><br>Deck Summary:<br>"""<br>[Paste your pitch deck summary here]<br>"""<br><br>Provide: Scores, justification for each, and 3 specific improvements.</p>
+  </div>
+
+  <h2>Tools for VC Funds — Investor Side</h2>
+  <table class="tb">
+    <tr><th>Tool</th><th>Use Case</th><th>Key Feature</th></tr>
+    <tr><td><strong>VentureGPT</strong></td><td>Market analysis, deal sourcing, term sheet guidance</td><td>Tailored for VC community, understands startup jargon</td></tr>
+    <tr><td><strong>Personal Starwatcher</strong></td><td>Deep startup evaluation — financials, market, risks</td><td>Predictive analytics for portfolio performance</td></tr>
+    <tr><td><strong>PortfolioPilot</strong></td><td>Real-time stocks, ETFs, crypto analysis</td><td>Personalized portfolio recommendations + macro trends</td></tr>
+    <tr><td><strong>Boolio Invest</strong></td><td>Quantitative stock screening and backtesting</td><td>High-level quant analysis without coding</td></tr>
+    <tr><td><strong>OnePage Stock Ideas</strong></td><td>Investment ideas from news and articles</td><td>Identifies companies benefiting from recent events</td></tr>
+    <tr><td><strong>PortfoliosLab</strong></td><td>ETF, mutual fund, crypto analysis</td><td>Historical performance + risk comparison</td></tr>
+  </table>
+
+  <h2>Live Prompting Exercise: Stock Research</h2>
+  <div class="ex">
+    <div class="ex-title">📈 Exercise: Research Apple Inc. as an Investment</div>
+    <div class="prompt-box">
+      <div class="label">Prompt</div>
+      <p>You are an equity research analyst. Provide a structured investment thesis for Apple Inc. (AAPL) covering:<br>1. Business overview (2 sentences)<br>2. Three bull case arguments with specific metrics<br>3. Three bear case risks<br>4. Key financial metrics to watch (P/E, revenue growth, margins)<br>5. Comparable companies in the space<br>6. Your preliminary view: Buy / Hold / Sell — with reasoning<br><br>Format as a structured research note. Note: Verify all specific numbers from real sources before using in any actual report.</p>
+    </div>
+  </div>
+
+  <h2>Due Diligence Automation Prompt</h2>
+  <div class="c purple">
+    <span class="tag t-purple">Advanced IB Prompt</span>
+    <div class="prompt-box">
+      <div class="label">M&amp;A Due Diligence Checklist Prompt</div>
+      <p>You are an M&amp;A analyst at an investment bank. Generate a comprehensive due diligence checklist for acquiring a Series B fintech company ($50M revenue, payment processing). Organize by category: Financial, Legal, Technical, Commercial, Management, Regulatory. For each item, add a priority level (High/Medium/Low) and typical document to request.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 7: ADVANCED TECHNIQUES ===== -->
+<div class="page" id="p7">
+<div class="inner">
+  <h1>Advanced Prompting Techniques</h1>
+  <p class="sub">Once you've mastered the basics, these techniques will make you a true power user.</p>
+
+  <h2>1. Chain of Thought (CoT) Prompting</h2>
+  <p>Ask the AI to show its reasoning step by step. Critical for financial calculations where you need to verify each step.</p>
+
+  <div class="ex">
+    <div class="ex-title">🧮 Finance Example: DCF Calculation with CoT</div>
+    <div class="prompt-box">
+      <div class="label">Chain of Thought Prompt</div>
+      <p>Walk me through a DCF valuation step by step. Think carefully at each stage.<br><br>Company: TechVentures Ltd<br>- Free Cash Flow Year 1: $2M<br>- FCF Year 2: $3.5M<br>- FCF Year 3: $5M<br>- Terminal Growth Rate: 3%<br>- WACC: 12%<br><br>Step 1: Discount each year's FCF<br>Step 2: Calculate Terminal Value<br>Step 3: Discount Terminal Value<br>Step 4: Sum to get Enterprise Value<br><br>Show all calculations and explain the formula used at each step.</p>
+    </div>
+  </div>
+
+  <h2>2. Role + Audience Stacking</h2>
+  <p>Assign both a role to the AI AND specify the target audience. This shapes tone and depth perfectly.</p>
+
+  <div class="formula">AI Role → defines expertise level | Target Audience → defines communication style</div>
+
+  <div class="c hl">
+    <span class="tag t-blue">Examples</span>
+    <table class="tb">
+      <tr><th>AI Role</th><th>Audience</th><th>Result</th></tr>
+      <tr><td>Senior IB Analyst</td><td>"a first-year analyst"</td><td>Educational, explains jargon</td></tr>
+      <tr><td>VC Partner</td><td>"a non-technical founder"</td><td>Business-focused, avoids finance jargon</td></tr>
+      <tr><td>Credit Risk Manager</td><td>"the CFO"</td><td>Strategic, data-heavy, executive summary style</td></tr>
+      <tr><td>Equity Research Analyst</td><td>"retail investors"</td><td>Plain English, analogies, no jargon</td></tr>
+    </table>
+  </div>
+
+  <h2>3. Persona + Constraint Prompting</h2>
+  <div class="ex">
+    <div class="ex-title">📝 Assignment: Cover Letter with Full Constraints</div>
+    <div class="prompt-box">
+      <div class="label">Full Constraint Prompt</div>
+      <p>PERSONA: You are an expert career coach specializing in investment banking recruitment, with knowledge of what MDs at Goldman Sachs, Morgan Stanley, and JPMorgan look for in candidates.<br><br>TASK: Write a cover letter for this candidate:<br>- 5 years equity research experience, TMT sector<br>- CFA Level 2 passed<br>- Top performer in current role (20% above team average)<br>- Targeting: Senior Equity Research Analyst at a bulge bracket bank<br><br>CONSTRAINTS:<br>- Exactly 3 paragraphs<br>- Maximum 280 words<br>- Formal, confident tone (not arrogant)<br>- No clichés like "I am writing to express my interest"<br>- Open with a compelling hook that references a specific market insight<br><br>OUTPUT FORMAT: Write the full letter, then provide a 3-bullet critique of what makes it strong.</p>
+    </div>
+  </div>
+
+  <h2>4. Iterative Refinement Workflow</h2>
+  <ol class="steps">
+    <li><strong>First Pass:</strong> Get a draft — don't overthink your first prompt</li>
+    <li><strong>Evaluate:</strong> Read the output — what's missing? What's off?</li>
+    <li><strong>Refine:</strong> "Make the second paragraph more quantitative", "Add a risk section", "Shorten by 30%"</li>
+    <li><strong>Fine-tune:</strong> "Change the tone from formal to conversational", "Add 2 specific data points"</li>
+    <li><strong>Final check:</strong> "Review this response for accuracy and any claims that need verification"</li>
+  </ol>
+
+  <h2>5. Structured Output Prompting</h2>
+  <p>Tell the AI exactly what format you need the output in:</p>
+
+  <div class="prompt-box">
+    <div class="label">Structured Output Prompt</div>
+    <p>Analyze the following startup for investment potential.<br><br>Company: [Description]<br><br>Provide your analysis in EXACTLY this format:<br><br>INVESTMENT SCORE: [X/10]<br>VERDICT: [INVEST / PASS / MORE DILIGENCE]<br><br>STRENGTHS:<br>• [Point 1]<br>• [Point 2]<br>• [Point 3]<br><br>WEAKNESSES:<br>• [Point 1]<br>• [Point 2]<br><br>KEY QUESTIONS FOR FOUNDERS:<br>1. [Question]<br>2. [Question]<br>3. [Question]<br><br>COMPARABLE COMPANIES: [Company 1], [Company 2]</p>
+  </div>
+
+  <h2>6. The "Red Team" Technique</h2>
+  <div class="c red">
+    <span class="tag t-red">Advanced IB Use Case</span>
+    <p>After getting an investment thesis or memo, ask the AI to attack it:</p>
+    <div class="prompt-box" style="margin-top:10px;">
+      <div class="label">Red Team Prompt</div>
+      <p>Here is an investment thesis I wrote for XYZ Company: [paste thesis]<br><br>Now act as a skeptical Senior Partner who is trying to find every flaw in this thesis. Generate 5 strong counterarguments that could convince an investment committee to REJECT this deal. Be specific and use financial reasoning.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 8: WORKSHOP ===== -->
+<div class="page" id="p8">
+<div class="inner">
+  <h1>Hands-On Workshop</h1>
+  <p class="sub">Four practical exercises to complete during the session. Work individually or in pairs.</p>
+
+  <h2>🏋️ Exercise 1: Excel Formula Builder (15 mins)</h2>
+  <div class="c hl">
+    <span class="tag t-blue">Using the HR Dataset (ChatGPT + Macros.xlsx)</span>
+    <p>Open the provided Excel file and use ChatGPT to answer these questions about the employee data:</p>
+    <table class="tb">
+      <tr><th>#</th><th>Question</th><th>Your Formula</th></tr>
+      <tr><td>1</td><td>What is the average salary for IT department?</td><td><em>Write prompt → paste formula</em></td></tr>
+      <tr><td>2</td><td>How many employees are in the United States?</td><td><em>Write prompt → paste formula</em></td></tr>
+      <tr><td>3</td><td>Who are the top 5 highest-paid employees?</td><td><em>Write prompt → use LARGE function</em></td></tr>
+      <tr><td>4</td><td>What % of employees have a bonus &gt; 20%?</td><td><em>COUNTIF / total count</em></td></tr>
+      <tr><td>5</td><td>Create a macro that highlights all VPs in yellow</td><td><em>ChatGPT → VBA code</em></td></tr>
+    </table>
+  </div>
+
+  <h2>🏋️ Exercise 2: Email Writing (10 mins)</h2>
+  <div class="c teal">
+    <span class="tag t-teal">From the Class Worksheet</span>
+    <p>Write this prompt and compare your output with a classmate:</p>
+    <div class="prompt-box" style="margin-top:10px;">
+      <div class="label">Your Assignment</div>
+      <p>You are an equity research analyst with 5 years of experience in the TMT sector. Write a professional cover letter to apply for a Senior Equity Research Analyst role at an investment bank of your choice. Requirements: 3 paragraphs, under 300 words, professional tone, highlight 2 specific accomplishments with numbers.</p>
+    </div>
+    <p style="margin-top:10px;font-size:13px;"><strong>Refinement challenge:</strong> After your first output, ask ChatGPT to "Make the opening line more compelling and remove any clichés"</p>
+  </div>
+
+  <h2>🏋️ Exercise 3: Pitch Deck Analysis (15 mins)</h2>
+  <div class="c gold">
+    <span class="tag t-gold">VC Role-Play</span>
+    <p>Pick any startup idea you know (real or hypothetical). Use ChatGPT to:</p>
+    <ol class="steps">
+      <li>Generate a 6-slide pitch deck outline for the startup</li>
+      <li>Then switch roles — ask ChatGPT to <em>critique</em> the deck as a VC partner</li>
+      <li>Iterate: improve the weakest section based on the critique</li>
+    </ol>
+    <div class="prompt-box" style="margin-top:10px;">
+      <div class="label">Starter Prompt</div>
+      <p>I'm pitching a fintech startup called "CashFlow AI" that uses ML to help SMEs predict their cash flow needs 90 days in advance. Target: raising $3M Seed round.<br><br>Generate a 6-slide pitch deck outline with: slide title, 3 key bullet points per slide, and one data point or visual suggestion for each.</p>
+    </div>
+  </div>
+
+  <h2>🏋️ Exercise 4: Gamma Presentation (20 mins)</h2>
+  <div class="c purple">
+    <span class="tag t-purple">Class Assignment</span>
+    <p>Go to <strong>gamma.app</strong> and create a complete presentation on:</p>
+    <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:14px 18px;margin:10px 0;">
+      <p style="font-weight:600;font-size:15px;margin-bottom:6px;">Topic: "Renewable Sources of Energy as an Investment Theme"</p>
+      <p style="font-size:13px;color:var(--muted);margin:0;">Required slides: Definition &amp; Importance → Solar → Wind → Hydropower → Biomass → Geothermal → Investment Benefits → Risks &amp; Challenges</p>
+    </div>
+    <p style="font-size:13px;margin-top:10px;">After creating, export as PDF. Compare with classmates — discuss: Which design worked best? What would you change?</p>
+  </div>
+
+  <h2>⭐ Bonus Challenge: The Full IB Stack</h2>
+  <div class="c green">
+    <span class="tag t-green">For Fast Finishers</span>
+    <p>Pick any public company (Apple, Tesla, Reliance, etc.) and in 20 minutes:</p>
+    <ol class="steps">
+      <li>Use ChatGPT to write a 1-page investment thesis</li>
+      <li>Use Boolio Invest or PortfolioPilot to check the stock metrics</li>
+      <li>Use Gamma to turn your thesis into a 5-slide investor brief</li>
+      <li>Use ChatGPT to "red team" your own thesis — find the flaws</li>
+    </ol>
+    <p style="font-size:13px;color:var(--muted);margin-top:8px;">Share your mini-pitch with the class!</p>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 9: QUIZ ===== -->
+<div class="page" id="p9">
+<div class="inner">
+  <h1>Session Quiz</h1>
+  <p class="sub">Test your understanding before the assignments!</p>
+
+  <div class="qz" id="q1">
+    <div class="qt">Q1: What does the "R" in the CRISP prompt framework stand for?</div>
+    <div class="qo" onclick="ans('q1',this,false)">A) Results</div>
+    <div class="qo" onclick="ans('q1',this,true)">B) Role</div>
+    <div class="qo" onclick="ans('q1',this,false)">C) Research</div>
+    <div class="qo" onclick="ans('q1',this,false)">D) Requirements</div>
+    <div class="qf" id="q1f"></div>
+  </div>
+
+  <div class="qz" id="q2">
+    <div class="qt">Q2: You ask ChatGPT to calculate a DCF model and it gives you a specific terminal value. What should you do?</div>
+    <div class="qo" onclick="ans('q2',this,false)">A) Use it directly in your client presentation</div>
+    <div class="qo" onclick="ans('q2',this,true)">B) Verify the calculation manually and cross-check assumptions from real sources</div>
+    <div class="qo" onclick="ans('q2',this,false)">C) Trust it since AI doesn't make mistakes</div>
+    <div class="qo" onclick="ans('q2',this,false)">D) Use it only if it looks reasonable</div>
+    <div class="qf" id="q2f"></div>
+  </div>
+
+  <div class="qz" id="q3">
+    <div class="qt">Q3: What VBA keyboard shortcut opens the Excel Macro Editor?</div>
+    <div class="qo" onclick="ans('q3',this,false)">A) Ctrl + M</div>
+    <div class="qo" onclick="ans('q3',this,true)">B) Alt + F11</div>
+    <div class="qo" onclick="ans('q3',this,false)">C) Ctrl + Shift + V</div>
+    <div class="qo" onclick="ans('q3',this,false)">D) F5</div>
+    <div class="qf" id="q3f"></div>
+  </div>
+
+  <div class="qz" id="q4">
+    <div class="qt">Q4: Which technique asks the AI to show its reasoning step by step — useful for financial calculations?</div>
+    <div class="qo" onclick="ans('q4',this,false)">A) Few-shot prompting</div>
+    <div class="qo" onclick="ans('q4',this,false)">B) Role prompting</div>
+    <div class="qo" onclick="ans('q4',this,true)">C) Chain of Thought prompting</div>
+    <div class="qo" onclick="ans('q4',this,false)">D) Structured output prompting</div>
+    <div class="qf" id="q4f"></div>
+  </div>
+
+  <div class="qz" id="q5">
+    <div class="qt">Q5: A prompt says "Don't make it too long and don't use complicated words." What's wrong with it?</div>
+    <div class="qo" onclick="ans('q5',this,false)">A) It's too specific</div>
+    <div class="qo" onclick="ans('q5',this,true)">B) It uses negative language — better to say what you DO want</div>
+    <div class="qo" onclick="ans('q5',this,false)">C) Nothing, it's a good prompt</div>
+    <div class="qo" onclick="ans('q5',this,false)">D) It doesn't mention a role for the AI</div>
+    <div class="qf" id="q5f"></div>
+  </div>
+
+  <div class="qz" id="q6">
+    <div class="qt">Q6: What is Gamma.app best used for in an investment banking context?</div>
+    <div class="qo" onclick="ans('q6',this,false)">A) Running financial models</div>
+    <div class="qo" onclick="ans('q6',this,false)">B) Analyzing stock prices in real-time</div>
+    <div class="qo" onclick="ans('q6',this,true)">C) Quickly creating professional presentation decks using AI</div>
+    <div class="qo" onclick="ans('q6',this,false)">D) Writing VBA macros for Excel</div>
+    <div class="qf" id="q6f"></div>
+  </div>
+
+  <div class="qz" id="q7">
+    <div class="qt">Q7: What does "AI hallucination" mean in a finance context?</div>
+    <div class="qo" onclick="ans('q7',this,false)">A) When the AI generates beautiful charts</div>
+    <div class="qo" onclick="ans('q7',this,true)">B) When the AI confidently states incorrect financial facts or made-up numbers</div>
+    <div class="qo" onclick="ans('q7',this,false)">C) When the AI takes too long to respond</div>
+    <div class="qo" onclick="ans('q7',this,false)">D) When the AI refuses to answer a question</div>
+    <div class="qf" id="q7f"></div>
+  </div>
+
+  <h2 style="margin-top:36px;">📋 Session Summary Cheat Sheet</h2>
+  <div class="c hl">
+    <span class="tag t-blue">Everything in One Table</span>
+    <table class="tb">
+      <tr><th>Concept</th><th>Key Rule</th><th>Finance Application</th></tr>
+      <tr><td>CRISP Framework</td><td>Context + Role + Instructions + Style + Purpose</td><td>Always use for client-facing content</td></tr>
+      <tr><td>Chain of Thought</td><td>"Think step by step" / "Show your work"</td><td>DCF, LBO, valuation calculations</td></tr>
+      <tr><td>Role Prompting</td><td>Assign AI a specific expert persona</td><td>"You are a Goldman Sachs MD..."</td></tr>
+      <tr><td>Red Teaming</td><td>Ask AI to attack your own thesis</td><td>Investment committee prep</td></tr>
+      <tr><td>Structured Output</td><td>Define exact format in the prompt</td><td>Investment memos, due diligence checklists</td></tr>
+      <tr><td>Hallucination Risk</td><td>Never trust AI numbers without verifying</td><td>Always cross-check with Bloomberg/FactSet</td></tr>
+      <tr><td>Gamma.app</td><td>AI presentation tool — outline → full deck</td><td>Pitch decks, investor briefs, sector reports</td></tr>
+      <tr><td>VBA Macros</td><td>Describe task in plain English → get code</td><td>Excel automation, financial formatting</td></tr>
+    </table>
+  </div>
+
+  <h2>📚 Assignments to Complete After Class</h2>
+  <div class="c gold">
+    <span class="tag t-gold">Take-Home Work</span>
+    <ol class="steps">
+      <li><strong>Cover Letter:</strong> Using ChatGPT, write a cover letter as a 5-year equity research analyst applying for a senior role. Refine it 3 times using iterative prompting. Submit your final version and your 3 prompts used.</li>
+      <li><strong>Gamma Deck:</strong> Create a full presentation on "Renewable Sources of Energy as an Investment Theme" using gamma.app. Export as PDF and submit.</li>
+      <li><strong>Excel Macro:</strong> Using the HR dataset provided, write a VBA macro (with ChatGPT's help) that creates a summary sheet showing average salary and headcount by department. Document your prompt.</li>
+      <li><strong>Research Note:</strong> Pick any listed company. Use ChatGPT to generate a 1-page research note with bull/bear case. Red-team it. Submit both the note and the critique.</li>
+    </ol>
+  </div>
+</div>
+</div>
+
+</div><!-- wrap -->
+
+<div class="pbar" id="pb"></div>
+
+<script>
+const pages=["Overview","Language Models","Best Practices","Model Types","Excel + Macros","Gamma Decks","IB Tools","Advanced Techniques","Workshop","Quiz"];
+const nav=document.getElementById('tabNav');
+const ps=document.querySelectorAll('.page');
+let cur=0;
+pages.forEach((n,i)=>{
+  const t=document.createElement('div');
+  t.className='tab'+(i===0?' on':'');
+  t.textContent=n;
+  t.addEventListener('click',()=>go(i));
+  nav.appendChild(t);
+});
+function go(i){
+  ps[cur].classList.remove('on');
+  document.querySelectorAll('.tab')[cur].classList.remove('on');
+  cur=i;
+  ps[cur].classList.add('on');
+  document.querySelectorAll('.tab')[cur].classList.add('on');
+  ps[cur].scrollTop=0;
+  document.querySelectorAll('.tab')[cur].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  upPb();
+}
+function upPb(){
+  const p=ps[cur];
+  const pct=p.scrollHeight<=p.clientHeight?100:(p.scrollTop/(p.scrollHeight-p.clientHeight))*100;
+  document.getElementById('pb').style.width=pct+'%';
+}
+ps.forEach(p=>p.addEventListener('scroll',upPb));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'&&cur<pages.length-1)go(cur+1);
+  if(e.key==='ArrowLeft'&&cur>0)go(cur-1);
+});
+ps[0].classList.add('on');upPb();
+
+const qfb={
+  q1:{r:"Correct! R = Role. Assigning a role to the AI (like 'You are a Senior VC Partner') dramatically improves response quality because it sets the expertise level, tone, and perspective you expect.",w:"R stands for Role in the CRISP framework. Always assign the AI a specific expert persona — it dramatically shapes the quality and relevance of the response."},
+  q2:{r:"Correct! AI can hallucinate financial figures — always verify DCF inputs and outputs against Bloomberg, FactSet, or company filings. Never submit AI-generated financial data to a client without manual verification.",w:"Always verify AI-generated financial calculations. AI can hallucinate plausible-sounding but incorrect numbers. In investment banking, unverified data in a client deck can be career-ending."},
+  q3:{r:"Correct! Alt + F11 opens the Visual Basic Editor in Excel. From there, Insert → Module, paste the ChatGPT-generated VBA code, and press F5 to run.",w:"The correct shortcut is Alt + F11. This opens the VBA Editor where you paste ChatGPT-generated macro code. F5 runs the macro after you've pasted it."},
+  q4:{r:"Correct! Chain of Thought (CoT) prompting asks the AI to reason step by step. For finance, add 'Think step by step' or 'Show your work' to any calculation prompt — it reduces errors and lets you verify each step.",w:"Chain of Thought prompting asks the AI to show its reasoning step by step. It's especially valuable for financial calculations where you need to follow and verify each step of the logic."},
+  q5:{r:"Correct! Positive framing works better. Instead of 'don't make it long', say 'Keep it under 200 words'. Instead of 'don't use jargon', say 'Use plain English'. Negative constraints limit the model's creativity and are often ignored.",w:"The problem is negative language. Research shows AI responds better to positive instructions: tell it what TO do, not what NOT to do. 'Keep it under 150 words in plain English' beats 'don't be long or jargony'."},
+  q6:{r:"Correct! Gamma.app is an AI-powered presentation tool that turns a text outline into a full slide deck in minutes. It's perfect for first drafts of pitch decks and investor briefs.",w:"Gamma.app is specifically designed for creating AI-powered presentations. It's not for models or stock analysis — for those, use ChatGPT or dedicated finance tools like Boolio or PortfolioPilot."},
+  q7:{r:"Correct! AI hallucination in finance means the model confidently generates false data — made-up revenue figures, invented market cap numbers, or fabricated quotes. This is a serious risk in IB where data accuracy is everything.",w:"Hallucination means the AI generates confident but incorrect facts. In finance, this is dangerous — AI might invent stock prices or revenue figures that sound credible but are wrong. Always verify from primary sources."}
+};
+function ans(id,el,ok){
+  const c=document.getElementById(id);
+  if(c.classList.contains('done'))return;
+  c.classList.add('done');
+  const f=document.getElementById(id+'f');
+  if(ok){el.classList.add('ok');f.className='qf show r';f.textContent=qfb[id].r;}
+  else{el.classList.add('no');f.className='qf show w';f.textContent=qfb[id].w;}
+}
+</script>
+</body>
+</html>
