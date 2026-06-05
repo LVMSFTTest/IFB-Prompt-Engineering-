@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Engineering — IB & Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090f;--surface:#0e0e18;--card:#121220;--card2:#181828;
+  --acc:#7c5cfc;--gold:#f5c518;--mint:#00dba8;--coral:#ff5f6d;--sky:#38bdf8;--warm:#ff9844;--lav:#c084fc;
+  --txt:#ededf5;--muted:#6060a0;--dim:#22223a;--bdr:#1c1c32;--glow:rgba(124,92,252,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(9,9,15,.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--bdr);}
+.brand{padding:9px 18px 0;font-family:'Fraunces',serif;font-size:13px;font-weight:800;color:var(--acc);display:flex;align-items:center;gap:8px;}
+.brand em{color:var(--muted);font-size:10.5px;font-weight:400;font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;}
+.tabs{display:flex;overflow-x:auto;padding:4px 10px 5px;gap:2px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:5px 11px;border-radius:7px;font-size:10.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;border:1px solid transparent;white-space:nowrap;}
+.tab:hover{color:var(--txt);background:var(--card);}
+.tab.on{color:var(--acc);background:var(--glow);border-color:rgba(124,92,252,.28);}
+.wrap{margin-top:78px;height:calc(100vh - 78px);overflow:hidden;}
+.page{display:none;height:100%;overflow-y:auto;padding:22px 18px 68px;}
+.page.on{display:block;}
+.inner{max-width:860px;margin:0 auto;}
+h1{font-family:'Fraunces',serif;font-size:30px;font-weight:800;line-height:1.2;margin-bottom:6px;}
+h2{font-family:'Fraunces',serif;font-size:19px;font-weight:700;color:var(--acc);margin:26px 0 10px;}
+p,li{font-size:13.5px;line-height:1.78;margin-bottom:7px;}
+.sub{font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.65;}
+/* cards */
+.c{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin:12px 0;}
+.c.acc{border-left:4px solid var(--acc);}
+.c.go{border-left:4px solid var(--gold);}
+.c.mi{border-left:4px solid var(--mint);}
+.c.sk{border-left:4px solid var(--sky);}
+.c.wa{border-left:4px solid var(--warm);}
+.c.lv{border-left:4px solid var(--lav);}
+.c.co{border-left:4px solid var(--coral);}
+.tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:2px 7px;border-radius:4px;margin-bottom:7px;}
+.t-pu{background:rgba(124,92,252,.13);color:var(--acc);}
+.t-go{background:rgba(245,197,24,.13);color:var(--gold);}
+.t-mi{background:rgba(0,219,168,.13);color:var(--mint);}
+.t-sk{background:rgba(56,189,248,.13);color:var(--sky);}
+.t-wa{background:rgba(255,152,68,.13);color:var(--warm);}
+.t-lv{background:rgba(192,132,252,.13);color:var(--lav);}
+.t-co{background:rgba(255,95,109,.13);color:var(--coral);}
+/* table */
+.tb{width:100%;border-collapse:collapse;margin:10px 0;font-size:12.5px;}
+.tb th{background:var(--card2);color:var(--acc);padding:8px 11px;text-align:left;font-weight:600;font-size:10.5px;letter-spacing:.4px;border-bottom:2px solid var(--bdr);}
+.tb td{padding:8px 11px;border-bottom:1px solid var(--bdr);vertical-align:top;line-height:1.6;}
+.tb tr:hover td{background:rgba(124,92,252,.03);}
+/* grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;}
+.gc{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px;}
+.gc h4{font-size:12.5px;font-weight:700;margin-bottom:6px;}
+.gc ul{padding-left:15px;}
+.gc li{font-size:12px;margin-bottom:4px;color:var(--muted);}
+/* ---- DEMO CARD ---- */
+.demo{background:var(--surface);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin:14px 0;}
+.demo-hd{background:var(--card2);padding:11px 18px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--bdr);gap:10px;}
+.demo-hd .dt{font-size:12.5px;font-weight:700;color:var(--txt);flex:1;line-height:1.4;}
+.demo-hd .dn{font-size:9.5px;font-weight:700;color:var(--acc);background:rgba(124,92,252,.14);padding:3px 8px;border-radius:12px;white-space:nowrap;flex-shrink:0;}
+.demo-bd{padding:18px;}
+/* labels */
+.lbl{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin:12px 0 5px;display:flex;align-items:center;gap:5px;}
+.lbl::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.lbl.P{color:var(--gold);}
+.lbl.R{color:var(--mint);}
+.lbl.T{color:var(--sky);}
+.lbl.S{color:var(--lav);}
+.lbl:first-child{margin-top:0;}
+/* prompt / response / tip boxes */
+.pb{background:#0d0b02;border:1px solid rgba(245,197,24,.17);border-radius:8px;padding:13px 15px;margin-bottom:10px;font-size:13px;line-height:1.78;color:#f0e4b8;}
+.rb{background:#020d0a;border:1px solid rgba(0,219,168,.15);border-radius:8px;padding:13px 15px;margin-bottom:10px;font-size:13px;line-height:1.78;color:#a8e4d2;}
+.tb2{background:#02080f;border:1px solid rgba(56,189,248,.15);border-radius:8px;padding:12px 15px;margin-bottom:10px;font-size:12.5px;line-height:1.72;color:#84c8e4;}
+.sb{background:#0a0714;border:1px solid rgba(192,132,252,.15);border-radius:8px;padding:13px 15px;margin-bottom:10px;font-size:13px;line-height:1.78;color:#ccb4f0;}
+/* numbered steps */
+.steps{counter-reset:s;list-style:none;padding:0;margin:10px 0;}
+.steps li{counter-increment:s;padding:9px 10px 9px 44px;position:relative;margin-bottom:5px;border-radius:8px;background:var(--card);border:1px solid var(--bdr);font-size:13px;line-height:1.7;}
+.steps li::before{content:counter(s);position:absolute;left:11px;top:9px;width:23px;height:23px;background:var(--glow);border:1px solid rgba(124,92,252,.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--acc);}
+.steps li strong{color:var(--txt);}
+/* formula */
+.formula{background:var(--surface);border:2px solid var(--acc);border-radius:10px;padding:13px 18px;margin:12px 0;text-align:center;font-size:16px;font-weight:700;color:var(--txt);}
+.formula span{color:var(--acc);}
+.formula small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:4px;}
+/* tool card */
+.tcard{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin:10px 0;display:flex;gap:12px;align-items:flex-start;}
+.ticon{font-size:22px;width:42px;height:42px;background:var(--card2);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tinfo h4{font-size:13px;font-weight:700;margin-bottom:3px;}
+.tinfo p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.55;}
+.tlink{font-size:10.5px;color:var(--acc);margin-top:4px;display:block;font-family:'Fira Code',monospace;}
+/* inline code */
+.hi{background:rgba(124,92,252,.12);border-radius:4px;padding:1px 5px;font-family:'Fira Code',monospace;font-size:11.5px;color:var(--acc);}
+/* badge */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.b-pu{background:rgba(124,92,252,.14);color:var(--acc);}
+.b-go{background:rgba(245,197,24,.14);color:var(--gold);}
+.b-mi{background:rgba(0,219,168,.14);color:var(--mint);}
+.b-sk{background:rgba(56,189,248,.14);color:var(--sky);}
+.b-lv{background:rgba(192,132,252,.14);color:var(--lav);}
+.b-co{background:rgba(255,95,109,.14);color:var(--coral);}
+.hr{border:none;border-top:1px solid var(--bdr);margin:18px 0;}
+.pbar{position:fixed;bottom:0;left:0;height:3px;background:var(--acc);transition:width .12s;z-index:100;}
+.check{color:var(--mint);}
+.cross{color:var(--coral);}
+@media(max-width:680px){h1{font-size:22px;}h2{font-size:16px;}.g2,.g3{grid-template-columns:1fr;}.page{padding:16px 12px 60px;}.demo-hd{flex-direction:column;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="brand">&#10022; Prompt Engineering &mdash; IB &amp; Finance <em>Complete Demo Guide &middot; All 20 Tools</em></div>
+  <div class="tabs" id="tabNav"></div>
+</nav>
+<div class="wrap">
+<div class="page" id="p0"><div class="inner">
+<h1>Prompt Engineering for IB &amp; Finance</h1>
+<p class="sub">A complete, demo-ready guide covering every tool from the course deck — every tool gets at least 2 ready-to-run prompts, step-by-step instructions, and teaching tips for the instructor.</p>
+
+<h2>The Master Formula</h2>
+<div class="formula"><span>"Acting as a [Role] &mdash; do this [Task] &mdash; in this [Format]"</span>
+<small>Add Context ("I am a...") &nbsp;&middot;&nbsp; Size ("max 200 words") &nbsp;&middot;&nbsp; Constraints ("bullet points only") &nbsp;&middot;&nbsp; Iterate ("now add a Risk section")</small>
+</div>
+<div class="g3">
+  <div class="gc"><h4 style="color:var(--gold)">&#127917; Role</h4><p style="font-size:12px;color:var(--muted)">Who should the AI be? &ldquo;equity analyst&rdquo;, &ldquo;CFO&rdquo;, &ldquo;VC partner&rdquo;, &ldquo;pitch coach&rdquo;, &ldquo;startup advisor&rdquo;</p></div>
+  <div class="gc"><h4 style="color:var(--mint)">&#128203; Task</h4><p style="font-size:12px;color:var(--muted)">What to do? &ldquo;write a cover letter&rdquo;, &ldquo;analyse this startup&rdquo;, &ldquo;create a VBA macro&rdquo;, &ldquo;screen for stocks&rdquo;</p></div>
+  <div class="gc"><h4 style="color:var(--sky)">&#128208; Format</h4><p style="font-size:12px;color:var(--muted)">How to present? &ldquo;numbered table&rdquo;, &ldquo;bullet points&rdquo;, &ldquo;max 200 words&rdquo;, &ldquo;4 columns: Name|Score|Reason|Risk&rdquo;</p></div>
+</div>
+
+<h2>All 20 Tools &mdash; Session Road Map</h2>
+<table class="tb">
+<tr><th>#</th><th>Tool</th><th>Category</th><th>Page</th></tr>
+<tr><td>1</td><td>ChatGPT Best Practices</td><td>Foundation</td><td>Best Practices</td></tr>
+<tr><td>2</td><td>ChatGPT &mdash; Email Writing</td><td>Office AI</td><td>Email &amp; Research</td></tr>
+<tr><td>3</td><td>ChatGPT &mdash; Company Research (Google/Alphabet)</td><td>Office AI</td><td>Email &amp; Research</td></tr>
+<tr><td>4</td><td>ChatGPT + Excel Formula Generator</td><td>Office AI</td><td>Excel &amp; VBA</td></tr>
+<tr><td>5</td><td>ChatGPT + VBA Macros</td><td>Office AI</td><td>Excel &amp; VBA</td></tr>
+<tr><td>6</td><td>Google Gemini</td><td>AI Chat</td><td>Gemini + Images + Video</td></tr>
+<tr><td>7</td><td>Text-to-Image (DeepAI)</td><td>Image AI</td><td>Gemini + Images + Video</td></tr>
+<tr><td>8</td><td>Text-to-Video (HeyGen)</td><td>Video AI</td><td>Gemini + Images + Video</td></tr>
+<tr><td>9</td><td>Gamma.app &mdash; Presentations</td><td>Presentation AI</td><td>Gamma</td></tr>
+<tr><td>10</td><td>Pitch Deck Analyzer GPT</td><td>Startup Tools</td><td>Startup Tools</td></tr>
+<tr><td>11</td><td>Startup Pitch Deck GPT</td><td>Startup Tools</td><td>Startup Tools</td></tr>
+<tr><td>12</td><td>Business Blueprint GPT</td><td>Startup Tools</td><td>Startup Tools</td></tr>
+<tr><td>13</td><td>Lemonade Twist GPT</td><td>Startup Tools</td><td>Startup Tools</td></tr>
+<tr><td>14</td><td>Toon CEO Guy GPT</td><td>Startup Tools</td><td>Startup Tools</td></tr>
+<tr><td>15</td><td>VentureGPT</td><td>VC Tools</td><td>VC Tools</td></tr>
+<tr><td>16</td><td>Personal Starwatcher GPT</td><td>VC Tools</td><td>VC Tools</td></tr>
+<tr><td>17</td><td>Boolio Invest</td><td>Finance Tools</td><td>Finance Tools</td></tr>
+<tr><td>18</td><td>PortfolioPilot</td><td>Finance Tools</td><td>Finance Tools</td></tr>
+<tr><td>19</td><td>OnePage Stock Ideas</td><td>Finance Tools</td><td>Finance Tools</td></tr>
+<tr><td>20</td><td>PortfoliosLab</td><td>Finance Tools</td><td>Finance Tools</td></tr>
+</table>
+</div></div>
+<div class="page" id="p1"><div class="inner">
+<h1>Best Practices to Write Prompts</h1>
+<p class="sub">Before touching any tool, master these 5 techniques. They apply to every tool in this session &mdash; same skill, different platform.</p>
+
+<div class="c go"><span class="tag t-go">The 5 Refinement Levers</span>
+<table class="tb">
+<tr><th>#</th><th>Lever</th><th>The Question to Ask</th><th>How to Fix It</th></tr>
+<tr><td>1</td><td><strong>Relevance</strong></td><td>Is there output I don&rsquo;t need?</td><td>Add &ldquo;focus only on X, Y, Z &mdash; ignore everything else&rdquo;</td></tr>
+<tr><td>2</td><td><strong>Size</strong></td><td>Too long or too short?</td><td>Add &ldquo;maximum 5 bullet points&rdquo; or &ldquo;expand to 300 words&rdquo;</td></tr>
+<tr><td>3</td><td><strong>Context</strong></td><td>Does the AI know who you are?</td><td>Add &ldquo;I am a financial analyst preparing a client brief&rdquo;</td></tr>
+<tr><td>4</td><td><strong>Format</strong></td><td>Is the structure right for my use?</td><td>Add &ldquo;as a table: Name | Score | Reason&rdquo;</td></tr>
+<tr><td>5</td><td><strong>Iterate</strong></td><td>Can I build on the last response?</td><td>&ldquo;Now add a Risk section to the analysis above&rdquo;</td></tr>
+</table>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 1 &mdash; Relevance: Show the before &amp; after</span><span class="dn">Live Demo</span></div>
+  <div class="demo-bd">
+    <div class="lbl P">Weak Prompt &mdash; run this first</div>
+    <div class="pb">Tell me about Google.</div>
+    <div class="lbl R">What you get &mdash; and why it fails</div>
+    <div class="rb">A long paragraph about Google&rsquo;s founding, Larry Page, HQ in Mountain View, various products &hellip; Generic, Wikipedia-level, no financial angle, wrong format. <strong>Unusable for professional work.</strong></div>
+    <div class="lbl P">Strong Prompt &mdash; run this next and compare</div>
+    <div class="pb">Acting as a financial analyst covering US tech stocks, give me a structured overview of Alphabet Inc. (Google&rsquo;s parent company) with exactly these 4 sections, 2 bullet points each:<br>
+&bull; Company Background &nbsp;&bull; Revenue Model &nbsp;&bull; Market Position &nbsp;&bull; Top Investment Risk<br>
+Keep each bullet to one sentence. This is for an equity research note.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Show both outputs side by side. Ask: &ldquo;Which one could you paste into a client presentation right now?&rdquo; The difference is 100% in the prompt &mdash; same AI, completely different result. This single contrast is the core lesson of the entire session.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 2 &mdash; Context: Add your role and watch the output transform</span><span class="dn">Live Demo</span></div>
+  <div class="demo-bd">
+    <div class="lbl P">Without Context</div>
+    <div class="pb">What are the risks of investing in Tesla?</div>
+    <div class="lbl P">With Context + Format + Role</div>
+    <div class="pb">I am a buy-side equity analyst at a hedge fund. We are considering a long position in Tesla (TSLA). List the top 5 investment risks I need to present to my investment committee. For each risk include: (1) Risk name, (2) One-line description, (3) Potential stock price impact &mdash; HIGH / MEDIUM / LOW. Format as a numbered table.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">The phrase &ldquo;I am a buy-side analyst at a hedge fund&rdquo; shifts the entire output from general consumer advice to institutional-grade analysis. &ldquo;Committee&rdquo; changes tone. Context is the single biggest upgrade most students can make immediately.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 3 &mdash; Chain-of-Thought: Build a professional analyst note in 3 prompts</span><span class="dn">Live Demo</span></div>
+  <div class="demo-bd">
+    <div class="lbl S">Prompt 1 of 3 &mdash; Structure first</div>
+    <div class="sb">I am a financial analyst. I need a brief analyst note on Apple Inc. (AAPL). Step 1: Give me a 5-bullet company overview covering: business model, main revenue segments, market cap context, geographic revenue split, one key competitor.</div>
+    <div class="lbl S">Prompt 2 of 3 &mdash; Layer in financials</div>
+    <div class="sb">Good. Now add a Financial Snapshot section: revenue trend (last 3 years), net profit margin, P/E ratio vs sector average, dividend yield. Same bullet format.</div>
+    <div class="lbl S">Prompt 3 of 3 &mdash; Package it professionally</div>
+    <div class="sb">Combine everything above into a one-page analyst note. Use headers: COMPANY OVERVIEW | FINANCIAL SNAPSHOT | INVESTMENT THESIS (2 buy/hold bullets) | KEY RISK (1 bullet). Add today&rsquo;s date and &ldquo;Rating: BUY / HOLD / SELL&rdquo; at the top. Max 300 words.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Time this live &mdash; it takes under 3 minutes. A junior analyst at a bank spends 2&ndash;4 hours on the same document. This contrast makes the efficiency argument for AI in IB instantly tangible.</div>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p2"><div class="inner">
+<h1>ChatGPT &mdash; Email &amp; Company Research</h1>
+<p class="sub">Two applications directly from the course worksheets, with full step-by-step demo instructions and the actual expected outputs.</p>
+
+<h2>Part A: Email Writing &nbsp;<span class="badge b-pu">chat.openai.com &middot; Free</span></h2>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 1 &mdash; Office Leave Email (from class worksheet)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Open</strong> chat.openai.com in your browser. Click &ldquo;New chat&rdquo;.</li>
+      <li><strong>Run the basic prompt first</strong> so the class sees the weak output:<br>
+        <div class="pb" style="margin:8px 0 0">Write an email about taking leave from the office.</div>
+      </li>
+      <li><strong>Point out the problems</strong> in the output: placeholders like [Your Name] and [start date], overly long, no specific details, not ready to send.</li>
+      <li><strong>Run the upgraded prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as a professional office employee, write a formal leave request email to my manager. Details: 3 days sick leave, Monday 10th to Wednesday 12th. The email must: (1) be polite and professional, (2) mention I will hand over pending tasks to a colleague before I leave, (3) not give excessive personal health details, (4) end with a request for approval. Keep it under 130 words.</div>
+      </li>
+      <li><strong>Compare side by side</strong> &mdash; the upgraded version is ready to send immediately with zero editing.</li>
+      <li><strong>Iterate live:</strong> Ask a student what they would change (tone, length, add a specific reason). Show how one follow-up instruction improves it further in the same chat window.</li>
+    </ol>
+    <div class="lbl R">Expected output from the upgraded prompt</div>
+    <div class="rb">Subject: Sick Leave Request &mdash; 10th to 12th [Month]<br><br>Dear [Manager],<br>I am writing to request sick leave from Monday 10th to Wednesday 12th. I will ensure all pending tasks are handed over to [colleague name] before my absence and will be available on email for urgent matters.<br>Kindly approve my leave request at your convenience.<br>Best regards, [Name]</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 2 &mdash; IB Cover Letter (class assignment)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Explain the assignment</strong> from the worksheet: write a cover letter as a 5-year equity research analyst applying for a job in the same industry.</li>
+      <li><strong>Run Prompt A &mdash; the core letter:</strong>
+        <div class="pb" style="margin:8px 0 0">You are an equity research analyst with 5 years of experience covering technology stocks at a mid-sized asset management firm. Write a one-page professional cover letter to apply for a Senior Equity Research Analyst role at Goldman Sachs. Highlight: (1) track record in financial modelling and DCF analysis, (2) sector expertise in technology, (3) experience writing institutional research notes, (4) motivation for moving to a top-tier investment bank. Tone: formal. Address to &ldquo;Dear Hiring Manager&rdquo;. Four paragraphs.</div>
+      </li>
+      <li><strong>Show the output</strong> &mdash; note the professional structure, specific IB language, and persuasive tone.</li>
+      <li><strong>Run Prompt B &mdash; personalise it:</strong>
+        <div class="pb" style="margin:8px 0 0">Revise the cover letter above. In the second paragraph, add this specific achievement: my research note on Microsoft&rsquo;s cloud segment led to a Buy recommendation that outperformed the NASDAQ by 18% over 12 months. Also make the opening sentence more direct and attention-grabbing. Keep everything else identical.</div>
+      </li>
+      <li><strong>Key lesson:</strong> Prompt A gives the template. Prompt B personalises it. Students should always inject their own specific achievements &mdash; the AI provides structure, you provide the proof.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Part B: Company Research &mdash; 4-Step Refinement <span class="badge b-go">From Worksheet</span></h2>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 3 &mdash; Google / Alphabet: Generic to Analyst-Grade in 4 steps</span><span class="dn">Full Walkthrough</span></div>
+  <div class="demo-bd">
+    <div class="lbl S">Step 1 &mdash; Broad prompt (show the problem)</div>
+    <div class="sb">Tell me about Google Inc.</div>
+    <div class="lbl R">Result</div>
+    <div class="rb">A generic paragraph. Wrong format, wrong depth, irrelevant for financial analysis. This is what most beginners submit.</div>
+    <div class="lbl S">Step 2 &mdash; Add Role + Structure (Relevance fix)</div>
+    <div class="sb">Acting as a financial analyst, give me an overview of Alphabet Inc. (Google&rsquo;s parent company) in this exact format &mdash; 5 sections, 2 bullets each: Company Background | Corporate Structure | Revenue Model | Market Position | Key Risks. Keep each bullet to one sentence. For an equity research note.</div>
+    <div class="lbl S">Step 3 &mdash; Condense + Add value (Size + Iteration)</div>
+    <div class="sb">Good. Now condense each section to 1 bullet only. Then add a new final section &ldquo;Investment Thesis&rdquo; with 2 bullets &mdash; one reason to BUY and one reason to HOLD or SELL Alphabet stock today.</div>
+    <div class="lbl S">Step 4 &mdash; Final professional format</div>
+    <div class="sb">Format the entire analysis as a professional one-page analyst note. Add the title &ldquo;ALPHABET INC. (GOOGL) &mdash; EQUITY RESEARCH BRIEF&rdquo;, today&rsquo;s date, and a Recommendation label: BUY / HOLD / SELL at the top. Do not change any content &mdash; only format it.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Run all 4 steps live back-to-back without stopping. The improvement from Step 1 to Step 4 is dramatic. Ask the class: &ldquo;How long would a junior analyst take to produce Step 4 manually?&rdquo; Answer: 2&ndash;4 hours. This sequence: under 4 minutes. Same AI throughout &mdash; 100% better prompts.</div>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p3"><div class="inner">
+<h1>ChatGPT + Excel: Formulas &amp; VBA Macros</h1>
+<p class="sub">Generate complex Excel formulas and automate tasks with VBA &mdash; all from plain-English descriptions. Two of the highest-value skills in Investment Banking, powered by AI.</p>
+
+<h2>Part A: Excel Formula Generator &nbsp;<span class="badge b-go">Free Tier Works</span></h2>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 1 &mdash; Financial Ratios: Profit Margin &amp; EPS</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Open</strong> ChatGPT_Macros.xlsx alongside ChatGPT. Show the raw dataset: Column A = Company names, B = Revenue, C = Net Profit, D = Shares Outstanding.</li>
+      <li><strong>Run this prompt in ChatGPT:</strong>
+        <div class="pb" style="margin:8px 0 0">I am working in Excel. My spreadsheet has:<br>
+Column A (A2:A20): Company names | Column B: Revenue (USD) | Column C: Net Profit (USD) | Column D: Shares Outstanding<br><br>
+Write Excel formulas for:<br>
+1. Profit Margin % = Net Profit &divide; Revenue &times; 100 &rarr; put in Column E<br>
+2. Earnings Per Share (EPS) = Net Profit &divide; Shares &rarr; put in Column F<br><br>
+For each: give the formula for row 2 so I can drag it down. Wrap in IFERROR to handle divide-by-zero errors. Explain each formula part in one plain-English sentence.</div>
+      </li>
+      <li><strong>Copy the formula</strong> exactly as written by ChatGPT.</li>
+      <li><strong>Click cell E2</strong> in Excel. Paste the Profit Margin formula. Press Enter.</li>
+      <li><strong>Click cell F2.</strong> Paste the EPS formula. Press Enter.</li>
+      <li><strong>Select E2:F2.</strong> Drag the fill handle down to row 20. All values populate instantly.</li>
+      <li><strong>Test the IFERROR:</strong> Delete a value in Column B. Show the cell displays &ldquo;N/A&rdquo; instead of a #DIV/0! error.</li>
+    </ol>
+    <div class="lbl R">Formulas ChatGPT will generate</div>
+    <div class="rb">E2 (Profit Margin %): =IFERROR((C2/B2)*100, "N/A")<br>
+F2 (EPS): =IFERROR(C2/D2, "N/A")</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Without AI, a new Excel user might spend 30 minutes figuring out IFERROR syntax alone. With AI: describe in English, get working code in 10 seconds. This is the practical ROI of prompt engineering for Excel users.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 2 &mdash; Cross-Sheet Lookup: INDEX-MATCH (professional standard)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Set the scene:</strong> You have two sheets &mdash; &ldquo;Companies&rdquo; (company names + sectors) and &ldquo;Financials&rdquo; (company names + revenue). You need to pull each company&rsquo;s sector into the Financials sheet.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">I have an Excel file with two sheets:<br>
+Sheet &ldquo;Companies&rdquo;: Column A = company names, Column B = their sector<br>
+Sheet &ldquo;Financials&rdquo;: Column A = company names, Column B = revenue<br><br>
+I need a formula in the Financials sheet, Column C, that looks up each company&rsquo;s sector from the Companies sheet.<br>
+Use INDEX-MATCH (NOT VLOOKUP &mdash; briefly explain in one sentence why INDEX-MATCH is safer). Give the formula for C2 that I can drag down. Include IFERROR for companies not found. Explain each part as if I am a complete Excel beginner.</div>
+      </li>
+      <li><strong>Paste the formula</strong> into Financials!C2 and drag it down.</li>
+      <li><strong>Show the safety advantage:</strong> Insert a blank column between columns A and B in the Companies sheet. VLOOKUP would break. INDEX-MATCH still works perfectly.</li>
+    </ol>
+    <div class="lbl R">Formula ChatGPT will generate</div>
+    <div class="rb">=IFERROR(INDEX(Companies!B:B, MATCH(A2, Companies!A:A, 0)), "Not Found")<br><br>
+MATCH finds the row where your company name appears in Companies column A. INDEX retrieves the sector from column B at that row. This works even if you insert columns later &mdash; unlike VLOOKUP.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Part B: VBA Macros &nbsp;<span class="badge b-mi">Automate Repetitive Work</span></h2>
+
+<div class="c mi"><span class="tag t-mi">How to run any VBA Macro &mdash; 5 universal steps</span>
+<ol class="steps">
+  <li><strong>Press Alt + F11</strong> &mdash; the Visual Basic Editor window opens.</li>
+  <li><strong>Click Insert</strong> in the menu bar &rarr; choose <strong>Module</strong> from the dropdown.</li>
+  <li><strong>Paste</strong> the ChatGPT-generated VBA code into the white text area on the right.</li>
+  <li><strong>Press F5</strong> (or click the green &#9654; Play button) to run the macro.</li>
+  <li><strong>Close the VBA Editor</strong> (Alt+F4 or X button). The macro has already run on your spreadsheet.</li>
+</ol>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 3 &mdash; Auto-Format a Financial Report</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Open</strong> ChatGPT_Macros.xlsx. Show the class the raw, unformatted data &mdash; no styled headers, no borders, columns too narrow to read.</li>
+      <li><strong>Run this prompt in ChatGPT:</strong>
+        <div class="pb" style="margin:8px 0 0">Write an Excel VBA macro that formats the active worksheet as a professional financial report. The macro must do exactly these 5 things:<br>
+1. Make Row 1 (headers) bold, font size 12, dark blue background RGB(0, 51, 102), white text colour<br>
+2. Auto-fit all column widths so all text is fully visible<br>
+3. Add a thin continuous border around every cell in the used data range (A1 to last used cell)<br>
+4. Freeze the top row so it stays visible when scrolling down<br>
+5. Show a message box at the end: &ldquo;Report formatted successfully!&rdquo;<br><br>
+Add a comment above each step explaining what it does. Write beginner-friendly code.</div>
+      </li>
+      <li><strong>Copy the full VBA code</strong> from ChatGPT.</li>
+      <li><strong>Press Alt + F11</strong> &rarr; Insert &rarr; Module &rarr; Paste the code.</li>
+      <li><strong>Press F5</strong> to run. The message box appears. Close the VBA editor.</li>
+      <li><strong>Show the before/after:</strong> Raw data is now a styled, professional report. Ask: &ldquo;How long manually?&rdquo; vs &ldquo;How long with AI?&rdquo;</li>
+    </ol>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">An analyst who formats 20 reports per week can automate all of it with this macro. You described the task in plain English &mdash; you got production-ready VBA code. No programming knowledge required.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 4 &mdash; Data Cleaning Macro (remove blanks, fix errors)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Context:</strong> Financial data downloaded from Bloomberg or Reuters often has blank rows, extra spaces, and &ldquo;#N/A&rdquo; error cells. Cleaning this manually takes hours. This macro does it in seconds.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Write an Excel VBA macro to clean a financial dataset on the active sheet. It must:<br>
+1. Delete all completely blank rows in the used range (do not delete Row 1 &mdash; that is the header)<br>
+2. Remove leading and trailing spaces from every text cell<br>
+3. Replace any cell containing the text &ldquo;N/A&rdquo; or &ldquo;#N/A&rdquo; with a genuinely empty cell<br>
+4. Count how many blank rows were deleted and show a message box: &ldquo;Cleaned! [X] blank rows removed&rdquo;<br><br>
+Add a comment above each step. Write beginner-friendly code.</div>
+      </li>
+      <li><strong>Before running:</strong> Show the messy data &mdash; blank rows, #N/A cells, company names with extra spaces.</li>
+      <li><strong>Run the macro</strong> (Alt + F11 &rarr; Insert Module &rarr; Paste &rarr; F5).</li>
+      <li><strong>Show the clean result</strong> and the message box with the row count deleted.</li>
+    </ol>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p4"><div class="inner">
+<h1>Google Gemini &middot; Text-to-Image &middot; Text-to-Video</h1>
+<p class="sub">Three different AI model types beyond ChatGPT &mdash; each with distinct strengths. Gemini for real-time research, DeepAI for image creation, HeyGen for video production.</p>
+
+<h2>Google Gemini &nbsp;<span class="badge b-sk">gemini.google.com &middot; Free</span></h2>
+<div class="tcard">
+  <div class="ticon">&#9800;</div>
+  <div class="tinfo">
+    <h4>Google Gemini</h4>
+    <p>Google&rsquo;s conversational AI. Answers questions, generates content, translates languages, and &mdash; unlike ChatGPT free &mdash; has access to <strong>real-time web information</strong>. Ideal for current market research.</p>
+    <span class="tlink">&rarr; gemini.google.com</span>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 1 &mdash; Gemini: Real-Time Financial News Summary</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Open</strong> gemini.google.com. Sign in with a Google account (free).</li>
+      <li><strong>Key advantage to highlight first:</strong> Gemini accesses live internet data. ChatGPT free is limited to its training cutoff. Show this difference makes Gemini superior for real-time research.</li>
+      <li><strong>Run Prompt A:</strong>
+        <div class="pb" style="margin:8px 0 0">I am an investment analyst. Give me a summary of the top 3 financial news stories from the past 48 hours that could impact global equity markets. For each story include: (1) headline, (2) which sectors or asset classes are affected, (3) potential market impact &mdash; Bullish / Bearish / Neutral with one sentence of reasoning. Format as a numbered list.</div>
+      </li>
+      <li><strong>Show the output</strong> &mdash; Gemini pulls live news and structures it for investment analysis.</li>
+      <li><strong>Run Prompt B &mdash; deepen one story:</strong>
+        <div class="pb" style="margin:8px 0 0">Take the most important story above. Acting as a senior macro strategist, write a 200-word investor note explaining: what happened, why it matters for equities, which sectors benefit most and which face risk, and one actionable portfolio recommendation. Professional tone, suitable for institutional investors.</div>
+      </li>
+      <li><strong>Compare with ChatGPT free:</strong> Ask ChatGPT the same Prompt A question. Show how Gemini&rsquo;s real-time data provides current context while ChatGPT gives older or generic information.</li>
+    </ol>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Gemini vs ChatGPT is not &ldquo;which is better&rdquo; &mdash; they have different strengths. Gemini: real-time research. ChatGPT: deep analysis, code, structured outputs. Professional analysts use both. Teach students to pick the right tool for each task.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 2 &mdash; Gemini: Translate &amp; Analyse Foreign Financial News</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Use case:</strong> International analysts often encounter financial news in other languages. Gemini handles translation with financial context better than generic tools.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Translate the following German financial headline into English, then provide an investment analysis of its implications for an English-speaking equity analyst:<br><br>
+&ldquo;Deutsche Bank erh&ouml;ht Gewinnprognose f&uuml;r das Gesch&auml;ftsjahr 2024 angesichts starker Handelseinnahmen&rdquo;<br><br>
+After translating, explain: (1) what the news means in plain terms, (2) which market segments are directly affected, (3) whether this is Bullish / Bearish / Neutral for European banking stocks and why, (4) how a global portfolio manager should respond. Format with clear numbered sections.</div>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Text-to-Image: DeepAI &nbsp;<span class="badge b-lv">deepai.org &middot; Free &middot; No Login</span></h2>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 3 &mdash; Keywords vs Descriptive Prompts (from class worksheet)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Go to</strong> deepai.org/text-to-image. No account needed &mdash; images generate instantly.</li>
+      <li><strong>Run the 4 keyword prompt from the worksheet first:</strong>
+        <div class="pb" style="margin:8px 0 0">Sunset, River, Mountain, Nature</div>
+      </li>
+      <li><strong>Show the result:</strong> Functional but completely generic. Could be any mountain scene from any stock photo site.</li>
+      <li><strong>Now run the descriptive version:</strong>
+        <div class="pb" style="margin:8px 0 0">A breathtaking golden sunset reflecting on a perfectly calm mountain river, surrounded by dense pine forests and snow-capped peaks in the background. Photorealistic style, warm orange and violet tones, cinematic lighting, ultra-high detail, dramatic cloudscape above the mountains.</div>
+      </li>
+      <li><strong>Compare both images side by side.</strong> The descriptive prompt produces a dramatically more specific, professional result.</li>
+      <li><strong>Run a finance use case</strong> to connect the tool to IB:
+        <div class="pb" style="margin:8px 0 0">A clean minimalist flat-design illustration of a financial analyst at a modern desk with three monitors showing stock charts, bar graphs, and a world map with financial data overlays. Corporate blue and white colour palette, no text in the image, professional style suitable as a presentation slide background.</div>
+      </li>
+      <li><strong>Save the image</strong> and show it can drop directly into a Gamma deck or PowerPoint.</li>
+    </ol>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">The same prompt engineering principles apply to images: specificity = quality. Style modifiers (&ldquo;photorealistic&rdquo;, &ldquo;flat design&rdquo;), lighting (&ldquo;cinematic&rdquo;), mood (&ldquo;dramatic&rdquo;), and negatives (&ldquo;no text in the image&rdquo;) are the image equivalent of Role, Format, and Constraints in text prompts. Same skill, different medium.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Text-to-Video: HeyGen &nbsp;<span class="badge b-co">heygen.com</span></h2>
+<div class="tcard">
+  <div class="ticon">&#127909;</div>
+  <div class="tinfo">
+    <h4>HeyGen</h4>
+    <p>Creates realistic AI-avatar videos from text scripts. An avatar reads your script with human-like expressions and gestures. Used in marketing, client communication, training materials &mdash; no camera, no studio, no editing software needed.</p>
+    <span class="tlink">&rarr; heygen.com</span>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 4 &mdash; HeyGen: Generate a Script in ChatGPT, then produce the video</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Explain what HeyGen does:</strong> You write a script &rarr; HeyGen creates a video of an AI avatar presenting it. No filming or recording at all.</li>
+      <li><strong>Step 1 &mdash; Generate the video script in ChatGPT first:</strong>
+        <div class="pb" style="margin:8px 0 0">Write a 60-second video script for an AI avatar to present. Topic: &ldquo;What is an IPO and why does it matter for investors?&rdquo; Requirements: conversational but professional tone, suitable for a general investor audience (no unexplained jargon), exactly 150 words, natural pauses marked as [PAUSE]. End with a call-to-action: &ldquo;Visit our website to learn more about IPO investing strategies.&rdquo;</div>
+      </li>
+      <li><strong>Copy the generated script</strong> from ChatGPT.</li>
+      <li><strong>Go to heygen.com</strong> &rarr; click Create Video &rarr; choose an avatar from the library.</li>
+      <li><strong>Paste the script</strong> into the text/teleprompter field. Select voice, language, and accent.</li>
+      <li><strong>Click Generate</strong> and show the preview video to the class &mdash; a professional avatar delivering the financial explainer.</li>
+    </ol>
+    <div class="lbl P">Bonus Prompt &mdash; B2B Marketing Video Script</div>
+    <div class="pb">Write a 45-second HeyGen script for a startup B2B marketing pitch. Company: &ldquo;FinFlow&rdquo; &mdash; an AI tool that automates expense reporting for finance teams. Target audience: CFOs at mid-sized companies. Highlight the problem (manual expense reporting wastes 8 hours per week), the solution (FinFlow automates in minutes), end with &ldquo;Request a free demo at FinFlow.ai&rdquo;. Confident and direct tone. Mark pauses as [PAUSE]. Exactly 120 words.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">ChatGPT + HeyGen is a complete content production pipeline. ChatGPT writes the script, HeyGen produces the video. IB and finance applications: investor explainer videos, client onboarding clips, training materials, startup marketing. The script quality determines the video quality &mdash; reinforcing why prompt engineering for scripts is a real professional skill.</div>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p5"><div class="inner">
+<h1>Gamma.app &mdash; AI Presentations</h1>
+<p class="sub">Complete, visually polished presentations from a single text prompt. No design skills, no templates, no formatting time. Used by startups, consultants, and analysts globally.</p>
+
+<h2>What is Gamma? &nbsp;<span class="badge b-pu">gamma.app &middot; Free Tier</span></h2>
+<div class="tcard">
+  <div class="ticon">&#127919;</div>
+  <div class="tinfo">
+    <h4>Gamma</h4>
+    <p>Type a topic or detailed outline &rarr; Gamma builds a complete slide deck with professional design, layout, icons, and formatted content. Edit any slide, change the entire theme with one click, then export to PowerPoint or PDF.</p>
+    <span class="tlink">&rarr; gamma.app</span>
+  </div>
+</div>
+
+<div class="c mi"><span class="tag t-mi">How to use Gamma &mdash; 4 steps</span>
+<ol class="steps">
+  <li><strong>Go to gamma.app</strong> and sign up free (Google account is fastest &mdash; takes 30 seconds).</li>
+  <li><strong>Click &ldquo;Create New&rdquo;</strong> &rarr; choose <strong>&ldquo;Generate&rdquo;</strong> (not &ldquo;Template&rdquo; &mdash; that is for manual builds).</li>
+  <li><strong>Paste your prompt</strong> into the text box &rarr; click &ldquo;Generate Outline&rdquo; to review the structure first &rarr; click &ldquo;Generate Slides&rdquo;.</li>
+  <li><strong>Edit any slide</strong> by clicking on it. Change the entire theme with one click from the Theme panel. <strong>Export to PPTX</strong> via the Share / Export menu.</li>
+</ol>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 1 &mdash; Class Assignment: Renewable Energy Presentation</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Pre-login to Gamma</strong> before the session to save time. Have a blank &ldquo;Generate&rdquo; window ready to paste into.</li>
+      <li><strong>Paste this prompt</strong> directly from the class worksheet (expanded with detail for better results):
+        <div class="pb" style="margin:8px 0 0">Create a professional presentation on Renewable Sources of Energy for an MBA Finance class. Include exactly these sections as individual slides:<br>
+&bull; Title slide: &ldquo;Renewable Energy: The Future of Finance &amp; Investment&rdquo;<br>
+&bull; Slide 2: Definition and Importance of Renewable Energy (include a key global statistic)<br>
+&bull; Slide 3: Solar Energy &mdash; how it works, global installed capacity<br>
+&bull; Slide 4: Wind Energy &mdash; onshore vs offshore comparison<br>
+&bull; Slide 5: Hydropower &mdash; advantages and limitations<br>
+&bull; Slide 6: Biomass &mdash; energy applications<br>
+&bull; Slide 7: Geothermal Energy &mdash; global hotspots<br>
+&bull; Slide 8: Environmental, Economic, and Security Benefits (3-column layout)<br>
+&bull; Slide 9: Challenges &mdash; Intermittency, High Costs, Policy Gaps<br>
+&bull; Slide 10: Investment Opportunity &mdash; why institutional investors are increasing renewable allocation<br><br>
+Target audience: Finance professionals and MBA students. Corporate dark theme. One data point per slide.</div>
+      </li>
+      <li><strong>Click Generate</strong> &mdash; the full deck appears in approximately 30 seconds. Show it loading live.</li>
+      <li><strong>Click one slide</strong> to edit it in real time. Change a bullet point. Then click Theme and switch the colour scheme to show how instant it is.</li>
+      <li><strong>Show Export to PPTX</strong> &mdash; confirm it integrates seamlessly with standard PowerPoint workflows.</li>
+      <li><strong>Key message:</strong> This deck: 1 minute. Manual PowerPoint: 2&ndash;3 hours minimum.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Demo 2 &mdash; IB Pitch Deck for a Startup (ClearLedger)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Use case:</strong> A startup founder needs a first-draft VC pitch deck. An IB analyst needs a client presentation framework. Gamma produces both in under a minute.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Create an investment banking pitch deck for a fintech startup called &ldquo;ClearLedger&rdquo; &mdash; an AI-powered accounting automation platform for small businesses. Follow the standard IB pitch structure:<br>
+Slide 1: Cover &mdash; company name, tagline &ldquo;Accounting, Automated.&rdquo; today&rsquo;s date<br>
+Slide 2: The Problem &mdash; CFOs at small businesses spend 15+ hours/week on manual bookkeeping<br>
+Slide 3: Our Solution &mdash; ClearLedger automates invoice processing, reconciliation, and tax prep using AI<br>
+Slide 4: Market Opportunity &mdash; $47B global accounting software market, 8% CAGR<br>
+Slide 5: Business Model &mdash; SaaS $299/month per business, targeting SMBs 10&ndash;200 employees<br>
+Slide 6: Traction &mdash; 250 paying clients, $75K MRR, 180% YoY growth<br>
+Slide 7: Financial Projections &mdash; 3-year revenue (Year 1: $1.2M, Year 2: $4M, Year 3: $11M)<br>
+Slide 8: The Ask &mdash; $3M Seed Round, use: 60% product, 30% sales, 10% operations<br>
+Slide 9: Team &mdash; CTO (ex-Intuit), CEO (ex-Deloitte), CFO (ex-Goldman Sachs)<br><br>
+Premium dark theme for institutional investors. Maximum 4 bullets per slide.</div>
+      </li>
+      <li><strong>Show the generated deck.</strong> Point out how each slide follows real VC pitch conventions: Problem &rarr; Solution &rarr; Market &rarr; Model &rarr; Traction &rarr; Financials &rarr; Ask &rarr; Team.</li>
+      <li><strong>Iterate live:</strong> Click the Market Opportunity slide and ask the class &ldquo;How could we make this stronger?&rdquo; Show manual editing and the built-in AI assistant for refining individual slides.</li>
+    </ol>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Students can use this template for their own project presentations by replacing &ldquo;ClearLedger&rdquo; with their own idea. The 9-slide structure follows exactly what VCs expect to see in a seed-stage pitch. This teaches pitch structure as a side effect of the demo.</div>
+  </div>
+</div>
+
+<h2>Gamma vs PowerPoint &mdash; When to Use Each</h2>
+<table class="tb">
+<tr><th>Aspect</th><th>PowerPoint (Manual)</th><th>Gamma (AI)</th></tr>
+<tr><td>Time to first draft</td><td>2&ndash;4 hours</td><td>Under 1 minute</td></tr>
+<tr><td>Design skill needed</td><td>Medium to High</td><td>None</td></tr>
+<tr><td>Content generation</td><td>Fully manual</td><td>AI generates structure + content</td></tr>
+<tr><td>Design consistency</td><td>Easy to lose across slides</td><td>Automatic throughout</td></tr>
+<tr><td>Exports to .pptx</td><td>Native</td><td>Yes &mdash; one click</td></tr>
+<tr><td>Best for</td><td>Final polished client deliverable</td><td>First draft, rapid prototyping, ideation</td></tr>
+</table>
+</div></div>
+<div class="page" id="p6"><div class="inner">
+<h1>AI Tools for Startups</h1>
+<p class="sub">Five GPT-powered tools that startups use to build pitches, plan strategy, generate leads, and create marketing content. Every tool gets 2 live demo prompts with step-by-step instructions.</p>
+
+<div class="c wa"><span class="tag t-wa">Access Note</span>
+<p style="font-size:12.5px;margin-bottom:0">These are custom GPTs on OpenAI&rsquo;s platform. They require <strong>ChatGPT Plus ($20/month)</strong> to run inside the GPT. For classroom demos without a Plus subscription: paste the prompts directly into <strong>standard ChatGPT free</strong> &mdash; the outputs will be very similar.</p>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 1: Pitch Deck Analyzer &nbsp;<span class="badge b-pu">GPT</span></h2>
+<div class="tcard"><div class="ticon">&#128202;</div><div class="tinfo">
+  <h4>Pitch Deck Analyzer</h4>
+  <p>Evaluates startup pitches for messaging clarity, financial viability, and investor appeal. Provides structured, scored feedback on each element of a pitch.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-PaKEiWpDG-vc</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Pitch Deck Analyzer &mdash; Demo 1: Full VC Scorecard</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Engagement tip:</strong> Ask a student to invent a startup idea on the spot &mdash; any idea. Use that in the prompt. The AI will score their idea and the class will be fully engaged.</li>
+      <li><strong>Run this prompt</strong> (or substitute the student&rsquo;s idea):
+        <div class="pb" style="margin:8px 0 0">Act as an experienced venture capital investor who has evaluated 500+ startup pitches. Analyse this pitch and provide a VC scorecard:<br><br>
+STARTUP: EduTrack AI &mdash; an AI platform that automatically tracks K-12 student performance and flags at-risk students in real time.<br>
+PROBLEM: Teachers spend 40% of their time on administrative tracking instead of actually teaching.<br>
+SOLUTION: AI dashboard that auto-tracks student progress, generates parent reports, and sends early alerts.<br>
+MARKET: $15B global EdTech market. Targeting the $3B school administration software segment.<br>
+BUSINESS MODEL: SaaS &mdash; $2,000 per school per year. 50 pilot schools currently active.<br>
+ASK: $2M seed funding to hire 5 engineers and scale to 200 schools in 12 months.<br><br>
+Scorecard &mdash; for each criterion give Score (1&ndash;10) and one sentence of feedback:<br>
+1. Problem Clarity &nbsp; 2. Market Size Credibility &nbsp; 3. Business Model Strength &nbsp; 4. Traction &nbsp; 5. Team (not mentioned &mdash; flag this) &nbsp; 6. Overall Fundability<br><br>
+Format as a table: Criterion | Score | Feedback. End with a 3-sentence investment verdict.</div>
+      </li>
+      <li><strong>Walk through each row</strong> with the class. The AI will likely score Team 2/10 (not mentioned) &mdash; this is a real red flag VCs always ask about.</li>
+      <li><strong>Scenario exercise:</strong> Ask a student &ldquo;What would you change?&rdquo; Modify one number (e.g., 200 schools already &rarr; just 5 schools) and re-run. Show how the verdict changes.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Pitch Deck Analyzer &mdash; Demo 2: Rewrite a Weak Slide</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Show this weak market slide text first:</strong> <span class="hi">&ldquo;The market for our product is very large and growing rapidly. There is a huge opportunity.&rdquo;</span></li>
+      <li><strong>Ask the class:</strong> &ldquo;Would a VC fund a startup based on this slide?&rdquo; (Answer: No &mdash; zero specifics.)</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as a VC pitch coach who has helped 100+ startups raise funding, rewrite this weak Market Opportunity slide into an investor-grade version:<br><br>
+WEAK VERSION: &ldquo;The market for our product is very large and growing rapidly. There is a huge opportunity.&rdquo;<br>
+STARTUP: EduTrack AI &mdash; AI student performance platform for K-12 schools.<br><br>
+Rewrite it to: (1) Use TAM &rarr; SAM &rarr; SOM framework with specific dollar figures, (2) Include a market CAGR with a source reference, (3) Identify the specific beachhead market to target first, (4) Keep it to exactly 4 bullet points, (5) Remove all vague language &mdash; every statement must be specific and defensible.</div>
+      </li>
+      <li><strong>Compare side by side.</strong> The contrast is the lesson: VCs fund specifics, not generalities.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 2: Startup Pitch Deck GPT &nbsp;<span class="badge b-pu">GPT</span></h2>
+<div class="tcard"><div class="ticon">&#128640;</div><div class="tinfo">
+  <h4>Startup Pitch Deck GPT</h4>
+  <p>Builds complete pitch decks from scratch &mdash; generating slide-by-slide content following proven investor frameworks. Goes beyond analysis into creation.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-8Bup8KxbJ-startup-pitch-deck</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Startup Pitch Deck GPT &mdash; Demo 1: Full 10-Slide Outline</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">I am building a pitch deck for a seed-stage VC presentation. Startup: &ldquo;PayEasy&rdquo; &mdash; a mobile app that lets informal street vendors accept digital payments using only a QR code on their phone (no hardware). Targeting 63 million informal traders in India.<br><br>
+Generate a complete 10-slide pitch deck outline. For each slide provide: (1) slide title, (2) recommended visual type (chart, map, headshots, etc.), (3) the actual content to include &mdash; not placeholders, write the real bullet points using plausible numbers, (4) one sentence explaining why this slide matters to a VC.<br>
+Follow the standard seed-stage VC pitch structure.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Startup Pitch Deck GPT &mdash; Demo 2: Executive Summary Slide</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Write the Executive Summary slide for PayEasy&rsquo;s pitch deck. This single slide must make a VC want to read the rest of the deck immediately. Include in exactly this format:<br>
+&bull; ONE powerful hook sentence (what is PayEasy in one sentence?)<br>
+&bull; THREE investment highlights (market timing, traction, team strength &mdash; why invest NOW)<br>
+&bull; ONE key metric that proves product-market fit<br>
+&bull; ONE sentence on the funding ask and what milestone it achieves<br><br>
+Style: Bold, confident, specific. Zero filler words. Every statement must be something a VC would underline. Maximum 80 words total.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 3: Business Blueprint GPT &nbsp;<span class="badge b-mi">GPT</span></h2>
+<div class="tcard"><div class="ticon">&#127959;</div><div class="tinfo">
+  <h4>Business Blueprint GPT</h4>
+  <p>Helps startups structure business ideas into actionable strategic plans, GTM strategies, and operational roadmaps. Goes beyond pitching &mdash; focuses on building and executing.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-S18HXeEm9-business-blueprint-gpt</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Business Blueprint &mdash; Demo 1: 90-Day Go-To-Market Plan</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Acting as a startup growth strategist, create a 90-day go-to-market plan for PayEasy &mdash; a QR-code digital payments app for informal traders in India (zero transaction fee for merchants up to &#8377;10,000/month, then 0.5% fee).<br><br>
+Structure as 3 phases:<br>
+Phase 1 (Days 1&ndash;30): Validate &amp; get first 50 active merchants<br>
+Phase 2 (Days 31&ndash;60): Optimise onboarding, reach 200 active merchants<br>
+Phase 3 (Days 61&ndash;90): Launch referral programme, reach 500 active merchants<br><br>
+For each phase provide: (1) 3 specific actions (concrete enough to execute on Day 1 &mdash; not &ldquo;do marketing&rdquo; but &ldquo;hire 2 field agents at Crawford Market, Mumbai&rdquo;), (2) single most important metric to track, (3) one risk and mitigation strategy.<br>
+Format as a table.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Business Blueprint &mdash; Demo 2: Revenue Model Comparison</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">I am the founder of PayEasy. Help me choose between these 3 revenue models:<br>
+Model A: 0.5% transaction fee on every payment processed<br>
+Model B: Freemium &mdash; free under &#8377;10,000/month, then &#8377;199/month flat<br>
+Model C: Premium subscription &mdash; &#8377;299/month, no transaction fees<br><br>
+For each model analyse: (1) Revenue predictability (High/Medium/Low), (2) Customer acquisition friction, (3) Estimated revenue per merchant per month at scale, (4) Best-fit customer profile, (5) Biggest risk.<br>
+Format as a comparison table. Then write a recommendation paragraph for a seed-stage startup prioritising fast user growth over near-term revenue.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Revenue model decisions are one of the most important strategic choices a startup makes. This prompt forces the AI to reason through unit economics, customer psychology, and growth dynamics &mdash; exactly the analysis an MBA student or early-stage investor would conduct in a case study.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 4: Lemonade Twist &nbsp;<span class="badge b-go">GPT &middot; B2B Marketing</span></h2>
+<div class="tcard"><div class="ticon">&#127819;</div><div class="tinfo">
+  <h4>Lemonade Twist</h4>
+  <p>B2B marketing and sales tool for startups. Targeted lead generation, customer segmentation, personalised marketing campaigns, and sales process automation with analytics tracking.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-YpUQYatQE-lemonade-twist</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Lemonade Twist &mdash; Demo 1: Lead Generation Strategy</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Acting as a B2B growth marketing specialist, create a targeted lead generation strategy for PayEasy targeting informal street traders in India.<br><br>
+Identify: (1) THREE specific customer segments to target first (be specific: &ldquo;vegetable vendors in tier-2 cities&rdquo; not just &ldquo;small businesses&rdquo;), (2) for each segment: where to find them (online and offline channels), what message resonates with them, best time/method to reach them, (3) a 5-question lead qualification checklist to decide if a merchant is a good fit, (4) one WhatsApp message template (under 60 words) to use as a cold outreach to potential merchant leads.<br><br>
+Format each segment as its own section with clear sub-headings.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Lemonade Twist &mdash; Demo 2: 4-Week Marketing Campaign Plan</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Create a 4-week digital marketing campaign for PayEasy targeting street food vendors and market traders in Mumbai. Total budget: &#8377;50,000.<br><br>
+For each week provide: campaign theme and key message, platform and ad format, specific content idea (describe the creative in 2 sentences), budget allocation, success metric to track (e.g., app downloads, QR scans, merchant sign-ups).<br><br>
+End with: conservative total expected results after 4 weeks, and the single most important lesson from this campaign to apply to the next one.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 5: Toon CEO Guy &nbsp;<span class="badge b-lv">GPT &middot; Branding</span></h2>
+<div class="tcard"><div class="ticon">&#128161;</div><div class="tinfo">
+  <h4>Toon CEO Guy</h4>
+  <p>Idea generation, market research, product naming, branding strategy, and email marketing for startups. Specialises in product-market fit and building memorable brand identities.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-zgKvwBkln-toon-ceo-guy</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Toon CEO Guy &mdash; Demo 1: Brand Name Generation</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Ask a student</strong> to describe their own startup idea (any idea). Use that to make the demo personal and engaging. Or use the prompt below.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">I am launching a fintech startup that helps freelancers and gig workers automatically track income across platforms (Uber, Fiverr, Upwork), calculate tax liability, and set aside savings each week. Target users: millennials and Gen Z, age 22&ndash;35, who find traditional banking too complex.<br><br>
+Generate: (1) 8 startup name ideas &mdash; short, modern, memorable, max 2 words. Mix real English words with invented words. (2) For your top 3 names: a tagline of maximum 7 words. (3) For each top 3: 3 adjectives describing the brand personality. (4) Flag which names are likely available as .com domains. (5) Recommend your single best name with a 2-sentence justification.<br><br>
+Prioritise names that feel friendly, trustworthy, and tech-forward.</div>
+      </li>
+      <li><strong>Show the output.</strong> Ask: &ldquo;Which name would you choose and why?&rdquo; Generate class discussion.</li>
+      <li><strong>Point out:</strong> Brand naming agencies charge &#8377;5&ndash;50 lakh for this work. AI produces 8 options with full analysis in 30 seconds. Human judgment of which to choose is still yours.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Toon CEO Guy &mdash; Demo 2: 3-Email Onboarding Sequence</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Acting as an email marketing specialist, write a 3-email onboarding sequence for new users of &ldquo;GigSave&rdquo; &mdash; a tax and savings automation app for freelancers.<br><br>
+Email 1 (send immediately on sign-up): Welcome. Goal: get them to connect their first income source. Tone: warm.<br>
+Email 2 (send Day 3): First value moment. Goal: show them their first auto-calculated tax estimate. Tone: reassuring &mdash; &ldquo;we&rsquo;ve done the hard work for you.&rdquo;<br>
+Email 3 (send Day 7): Referral. Goal: invite one friend. Offer: both get 1 month free. Tone: casual and friendly.<br><br>
+For each email: Subject line (max 8 words), Preview text (max 12 words), Body (max 120 words), CTA button text. Write as a human &mdash; warm, not robotic. No corporate jargon.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">A 3-email welcome sequence is one of the highest-ROI marketing assets a startup can have. Agencies charge &#8377;50,000&ndash;2,00,000 to write this. The AI produces the same quality instantly. The entrepreneur&rsquo;s job is now editing and refining &mdash; not writing from scratch.</div>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p7"><div class="inner">
+<h1>AI Tools for Venture Capital Funds</h1>
+<p class="sub">VC funds use AI to evaluate deals, analyse private market data, monitor portfolios, and support investment decisions &mdash; faster and more systematically than ever before.</p>
+
+<div class="hr"></div>
+<h2>Tool 6: VentureGPT &nbsp;<span class="badge b-pu">GPT &middot; VC Focus</span></h2>
+<div class="tcard"><div class="ticon">&#127970;</div><div class="tinfo">
+  <h4>VentureGPT</h4>
+  <p>Tailored for the VC community. Investment analysis, market sizing, term sheet guidance, portfolio strategy, and startup evaluation at institutional depth.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-C3WWLOnWX-venturegpt</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">VentureGPT &mdash; Demo 1: Series A Deal Evaluation Scorecard</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Context:</strong> A VC associate presents a deal to the investment committee. They need a structured evaluation. This prompt generates that document instantly.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Act as a senior partner at a Series A venture capital firm with $200M AUM. A startup is seeking $5M Series A. Deal summary:<br><br>
+Company: CloudHire &mdash; AI recruitment automation for tech companies<br>
+ARR: $800K growing at 180% YoY &nbsp;|&nbsp; Gross Margin: 72%<br>
+Founders: CTO (ex-Google, 10 years) + CEO (first-time founder, 3 years sales)<br>
+Clients: 45 paying enterprises, average ACV $18K<br>
+Burn: $120K/month &nbsp;|&nbsp; Runway: 8 months &nbsp;|&nbsp; Pre-money Valuation Ask: $25M<br><br>
+Evaluate using a weighted VC scorecard:<br>
+&bull; Team Quality (30%): score 1&ndash;10 + 2-sentence rationale<br>
+&bull; Market Opportunity (25%): score + rationale<br>
+&bull; Product / Technology (20%): score + rationale<br>
+&bull; Traction &amp; Growth (15%): score + rationale<br>
+&bull; Financial Metrics (10%): score + rationale<br><br>
+Calculate weighted total. Give final verdict: INVEST / CONDITIONAL / PASS with 3-sentence justification. List 2 due diligence questions you would ask the founders before committing.</div>
+      </li>
+      <li><strong>Walk through each score</strong> with the class. Highlight that 8-month runway makes this a &ldquo;must close now&rdquo; deal &mdash; a real VC pressure point.</li>
+      <li><strong>Scenario exercise:</strong> Change the runway to 18 months. Re-run. Show how the urgency and verdict shift.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">VentureGPT &mdash; Demo 2: Term Sheet Plain-English Explainer</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Context:</strong> First-time founders sign unfavourable term sheets because they don&rsquo;t understand the legal language. This prompt decodes the 5 most important clauses.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as a VC attorney and investment advisor, explain these 5 term sheet clauses to a first-time founder in plain, jargon-free English. For each clause provide: (1) what it means in simple terms, (2) why the investor wants this clause, (3) what founders should watch out for or negotiate.<br><br>
+Clauses: Liquidation Preference (1x non-participating) | Anti-Dilution Protection (broad-based weighted average) | Board Composition (2 investor seats, 2 founder seats, 1 independent) | Pro-Rata Rights | Drag-Along Provision<br><br>
+Format as a table: Clause | Plain English | Why Investors Want It | Founder Watch-Out</div>
+      </li>
+      <li><strong>Focus on the Founder Watch-Out column</strong> &mdash; this is where real negotiation happens. Ask if anyone has seen these terms before.</li>
+    </ol>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Term sheets are deliberately written in complex legal language. A lawyer reviewing one charges &#8377;50,000&ndash;2,00,000. This prompt decodes the 5 most important clauses in 30 seconds. Emphasise: AI for understanding, real lawyer for signing anything significant.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 7: Personal Starwatcher &nbsp;<span class="badge b-lv">GPT &middot; VC Analyst</span></h2>
+<div class="tcard"><div class="ticon">&#11088;</div><div class="tinfo">
+  <h4>Personal Starwatcher</h4>
+  <p>Acts as a VC startup analyst for in-depth evaluations. Extracts comprehensive insights into a startup&rsquo;s financials, market potential, and risks. Predictive analytics aid in forecasting future performance and portfolio optimisation.</p>
+  <span class="tlink">&rarr; chat.openai.com/g/g-6CDu3LvuO-personal-starwatcher</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Personal Starwatcher &mdash; Demo 1: Deep Startup Risk Profile</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Act as a senior VC startup analyst. Conduct a deep risk assessment for CloudHire (AI recruitment platform, $800K ARR, 45 enterprise clients, 8 months runway) across 5 dimensions:<br><br>
+1. EXECUTION RISK: Can the team actually build and scale this? Rate High/Medium/Low + 2 sentences.<br>
+2. MARKET RISK: Top 3 competitors by name + how each threatens CloudHire.<br>
+3. FINANCIAL RISK: At current burn ($120K/month) vs ARR growth, model 2 scenarios &mdash; best case and worst case for the next 12 months. When does the company run out of money in each?<br>
+4. TECHNOLOGY RISK: How defensible is their AI? Could a large tech company replicate this in 12 months? Why or why not?<br>
+5. REGULATORY RISK: What laws or regulations (GDPR, AI hiring bias legislation) could directly impact an AI recruitment platform?<br><br>
+For each: Rating | Key Evidence | Mitigation Strategy. End with: &ldquo;Top 3 Questions to Ask the CEO&rdquo; that a sharp VC would raise in the first meeting.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Ask the class to predict the ranking of risks before revealing the output. Starwatcher goes deeper than VentureGPT &mdash; it stress-tests assumptions and models scenarios. The &ldquo;3 Questions to Ask the CEO&rdquo; output is genuinely what experienced VCs use in first meetings.</div>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Personal Starwatcher &mdash; Demo 2: Portfolio Company Ranking</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Act as a VC portfolio analyst. I manage a seed-stage fund with 4 portfolio companies. Rank them by likelihood of reaching Series A in 18 months:<br><br>
+Company A: SaaSBuilder &mdash; B2B no-code tool. ARR $120K, 60% YoY growth, 15 customers, 18 months runway.<br>
+Company B: HealthTrack &mdash; patient monitoring wearable. ARR $80K, 200% YoY growth, 8 hospital clients, 6 months runway.<br>
+Company C: EduBot &mdash; AI tutoring app. ARR $0, 10,000 free users, 4% conversion rate, 12 months runway.<br>
+Company D: SupplyAI &mdash; logistics SaaS. ARR $400K, 90% YoY growth, 30 clients, 24 months runway.<br><br>
+For each: Series A readiness score (1&ndash;10), biggest strength, biggest risk, one recommended action for the founder this month. Rank 1&ndash;4 with 1 = most likely to raise. Format as ranked table + 1-paragraph summary.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Ask students to predict the ranking before the output. HealthTrack&rsquo;s 200% growth is impressive &mdash; but 6 months runway changes everything. SupplyAI looks boring with 90% growth but has the strongest fundamentals. This exercise teaches multi-dimensional VC thinking beyond just chasing growth rates.</div>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p8"><div class="inner">
+<h1>AI Tools for Financial Analysis</h1>
+<p class="sub">Four AI tools for investors, analysts, and portfolio managers &mdash; covering stock screening, portfolio analysis, news-driven investment ideas, and historical performance. Each tool: 2 full demo prompts.</p>
+
+<div class="hr"></div>
+<h2>Tool 8: Boolio Invest &nbsp;<span class="badge b-go">Quantitative Screening</span></h2>
+<div class="tcard"><div class="ticon">&#128200;</div><div class="tinfo">
+  <h4>Boolio Invest</h4>
+  <p>Enables exploration of stocks and equities using AI. Extensive financial data for global businesses, facilitates quantitative analysis, screens and backtests diverse investment styles.</p>
+  <span class="tlink">&rarr; chat.openai.com/share/8d1fbad7-56b5-4e7a-97ac-2f1844a3124d</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Boolio Invest &mdash; Demo 1: Value Stock Screener in Plain English</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Context:</strong> Professional quantitative screening is done on Bloomberg ($2,000+/month). This demo replicates the logic using AI &mdash; making the concept accessible to every student.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as a quantitative equity analyst at a value-focused hedge fund, identify stocks that broadly match these screening criteria. Clearly note if any figure is estimated or approximate:<br><br>
+Screening criteria:<br>
+&bull; Market Cap: $1B&ndash;$20B (mid-cap) &nbsp;&bull; P/E Ratio: below 15x &nbsp;&bull; ROE: above 15% &nbsp;&bull; Debt-to-Equity: below 0.5 &nbsp;&bull; Dividend Yield: above 2.5% &nbsp;&bull; Sector: Healthcare OR Consumer Staples &nbsp;&bull; Geography: US-listed<br><br>
+Present 5 example stocks. For each: Company Name | Ticker | Sector | Approx P/E | ROE | Dividend Yield | One-sentence investment case.<br><br>
+Add a disclaimer: all data must be verified on Bloomberg, Reuters, or a live financial data source before any investment decision.</div>
+      </li>
+      <li><strong>Show the table.</strong> Emphasise the disclaimer &mdash; AI-generated financial data requires verification from live sources. This is a critical professional point.</li>
+      <li><strong>Teach the concept:</strong> Explain P/E, ROE, D/E to the class using the output as context. The AI output becomes a teaching prop.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">Boolio Invest &mdash; Demo 2: Investment Strategy Backtest Logic</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Acting as a quantitative strategist, explain how you would backtest this investment strategy over the past 10 years (2014&ndash;2024) in the US stock market:<br><br>
+STRATEGY &ldquo;Value Momentum Blend&rdquo;: Buy the cheapest 20% of S&amp;P 500 stocks by P/E ratio that also have positive 6-month price momentum. Rebalance quarterly. Hold 20 stocks equal-weighted.<br><br>
+Tell me: (1) what data inputs are needed and where to get them, (2) how to handle survivorship bias, (3) likely return profile vs S&amp;P 500 based on academic factor research, (4) top 3 risks in live trading a backtest wouldn&rsquo;t capture, (5) what platforms a retail investor could use to actually run this backtest.<br><br>
+Format with clear numbered sections.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">This prompt teaches backtesting methodology &mdash; covered in CFA Level 1 and quantitative finance courses. The AI explains survivorship bias, data sourcing, and transaction costs in live trading. Use this to bridge academic factor theory (value + momentum) with practical implementation.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 9: PortfolioPilot &nbsp;<span class="badge b-mi">Portfolio Analysis</span></h2>
+<div class="tcard"><div class="ticon">&#129517;</div><div class="tinfo">
+  <h4>PortfolioPilot</h4>
+  <p>Navigates investing complexity. Real-time stock, ETF, and crypto information. Evaluates portfolios, provides personalised recommendations, and insights into macroeconomic trends. Valuable for beginners and intermediates.</p>
+  <span class="tlink">&rarr; chat.openai.com/share/6f0203ee-ac52-44d1-b580-135eba83bb72</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">PortfolioPilot &mdash; Demo 1: Portfolio Health Check</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Engagement:</strong> Ask &ldquo;Who has any investments &mdash; a mutual fund, stocks, crypto?&rdquo; Use a volunteer&rsquo;s real portfolio if they share it. Otherwise use the example below.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Act as a certified portfolio manager (CFA). Analyse this equity portfolio for a 32-year-old with moderate risk tolerance and 15-year horizon:<br><br>
+Apple (AAPL): 30% | Microsoft (MSFT): 25% | Tesla (TSLA): 20% | S&amp;P 500 ETF (SPY): 15% | Emerging Markets ETF (EEM): 10%<br><br>
+Provide a full portfolio health check with these 5 sections:<br>
+1. CONCENTRATION RISK: Is this portfolio dangerously over-concentrated? In which area?<br>
+2. CORRELATION RISK: Which holdings are highly correlated and will fall together in a downturn? Give estimated correlation coefficients.<br>
+3. MISSING ASSET CLASSES: What is this portfolio completely lacking for a 15-year horizon?<br>
+4. THREE REBALANCING RECOMMENDATIONS: Specific &mdash; what to reduce, what to add, by how much (give % allocations).<br>
+5. STRESS TEST: How would this portfolio likely perform in (a) a 2008-style crisis, (b) a tech-sector crash like 2000?<br><br>
+Format as a structured report with these 5 headers.</div>
+      </li>
+      <li><strong>Walk through each section.</strong> The concentration risk section (75%+ tech) and the stress test generate the best classroom discussion.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">PortfolioPilot &mdash; Demo 2: Macro Scenario Analysis</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Act as a macro strategist. Analyse how this scenario impacts the same portfolio (AAPL 30%, MSFT 25%, TSLA 20%, SPY 15%, EEM 10%):<br><br>
+SCENARIO: US Federal Reserve raises rates 150 basis points over 6 months to combat 6% inflation. GDP slows to 0.8%. US Dollar strengthens 10%.<br><br>
+For each holding: Direction (Bullish/Bearish/Neutral) | Magnitude (Strong/Moderate/Mild) | Key reason in 1 specific sentence (e.g., &ldquo;Rising rates compress tech P/E multiples because growth stocks are valued on discounted future cash flows&rdquo;).<br><br>
+Then: estimated portfolio-level impact (weighted), 2 tactical changes to hedge this scenario, 2 asset classes or sectors that would BENEFIT from this exact scenario. Format: table for individual holdings, then paragraphs for portfolio-level analysis.</div>
+    <div class="lbl T">Teaching Tip</div>
+    <div class="tb2">Ask students: &ldquo;What other scenarios should we test?&rdquo; Common answers: oil price spike, China economic crisis, AI regulation. Run 1&ndash;2 student suggestions live. This makes the session interactive and shows real-world applicability of scenario analysis as a portfolio management skill.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 10: OnePage Stock Ideas &nbsp;<span class="badge b-sky">News-to-Investment Ideas</span></h2>
+<div class="tcard"><div class="ticon">&#128161;</div><div class="tinfo">
+  <h4>OnePage Stock Ideas</h4>
+  <p>Uncovers investment prospects rooted in news or articles. Identifies companies poised to benefit from recent events or trends. Ideal for traders and investors who follow market catalysts.</p>
+  <span class="tlink">&rarr; chat.openai.com/share/5fa84c40-a7a0-4463-8997-8623339486c4</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">OnePage Stock Ideas &mdash; Demo 1: News-Driven Investment Brief</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Live demo tip:</strong> Pull a real financial headline from any news website right now and use it instead of the example below. This shows real-world applicability instantly.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as a thematic equity research analyst, analyse this news headline and generate a OnePage Investment Brief:<br><br>
+HEADLINE: &ldquo;India passes legislation mandating digital payments for all government vendor contracts above &#8377;1 lakh, effective April 2025.&rdquo;<br><br>
+Brief must cover:<br>
+1. THEME: What macro trend does this accelerate?<br>
+2. DIRECT BENEFICIARIES: 3 listed companies (India or global) that directly benefit &mdash; explain HOW each benefits<br>
+3. INDIRECT BENEFICIARIES: 2 companies that benefit indirectly (e.g., infrastructure plays)<br>
+4. POTENTIAL LOSERS: 1&ndash;2 companies or sectors negatively impacted<br>
+5. TIME HORIZON: Short-term trade or long-term theme? Why?<br>
+6. KEY RISK: What single event could invalidate this thesis?<br><br>
+Keep each section to 2&ndash;3 sentences maximum. Format as a structured one-pager.</div>
+      </li>
+      <li><strong>Show the output.</strong> Walk through Direct vs Indirect beneficiaries &mdash; this teaches supply chain and ecosystem thinking in investing.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">OnePage Stock Ideas &mdash; Demo 2: Thematic Investment Report (AI Infrastructure)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <div class="pb">Acting as a thematic equity research analyst, create a OnePage Investment Brief on the &ldquo;AI Infrastructure Buildout&rdquo; theme for 2024&ndash;2026.<br><br>
+Thesis: As AI adoption accelerates, the physical and digital infrastructure needed to run AI (data centres, chips, power, cooling, networking) will see explosive demand regardless of which specific AI apps &ldquo;win.&rdquo;<br><br>
+Structure: THESIS STATEMENT (2 sentences) | WHY NOW &mdash; 3 specific 2024 catalysts | TOP 5 STOCKS TO WATCH &mdash; company name, ticker, why it&rsquo;s an AI infrastructure play, one company-specific risk | MARKET SIZE &mdash; estimated with source | WHAT COULD GO WRONG &mdash; top 3 risks | TIME HORIZON and why.<br><br>
+Use real company names. Keep each section concise &mdash; this is a one-pager.</div>
+  </div>
+</div>
+
+<div class="hr"></div>
+<h2>Tool 11: PortfoliosLab &nbsp;<span class="badge b-co">Historical Analysis</span></h2>
+<div class="tcard"><div class="ticon">&#128300;</div><div class="tinfo">
+  <h4>PortfoliosLab</h4>
+  <p>Comprehensive analysis for stocks, ETFs, mutual funds, and crypto. Historical performance analysis, volatility metrics, and risk-adjusted return comparisons. Empowers investors to evaluate track records rigorously.</p>
+  <span class="tlink">&rarr; portfolioslab.com</span>
+</div></div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">PortfoliosLab &mdash; Demo 1: ETF Comparison (VOO vs QQQ vs EEM)</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Context:</strong> Most retail investors choose ETFs without understanding the differences in performance, risk, and cost. This prompt makes those differences concrete and surprising.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as an ETF analyst, compare these 3 popular ETFs for a long-term Indian retail investor considering their first investment:<br><br>
+VOO (Vanguard S&amp;P 500, expense ratio 0.03%) | QQQ (Invesco Nasdaq 100, expense ratio 0.20%) | EEM (iShares MSCI Emerging Markets, expense ratio 0.68%)<br><br>
+Compare across: (1) approximate 10-year annualised return, (2) volatility (High/Medium/Low with context), (3) expense ratio impact &mdash; show how 0.03% vs 0.68% affects a &#8377;10 lakh investment compounded over 10 years (show the calculation), (4) best-fit investor type for each, (5) correlation with each other &mdash; does holding all 3 actually diversify?<br><br>
+Format as a comparison table, then a recommendation paragraph for a moderate-risk 10-year horizon investor.</div>
+      </li>
+      <li><strong>Highlight the expense ratio calculation</strong> &mdash; the compound cost difference between 0.03% and 0.68% over 10 years on &#8377;10 lakh is typically &#8377;50,000&ndash;80,000. Students are always surprised by this.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="demo">
+  <div class="demo-hd"><span class="dt">PortfoliosLab &mdash; Demo 2: Sharpe Ratio &amp; Risk-Adjusted Returns</span><span class="dn">Step-by-Step</span></div>
+  <div class="demo-bd">
+    <ol class="steps">
+      <li><strong>Context:</strong> Professional investors never look at raw returns alone &mdash; they look at RISK-ADJUSTED returns. A 15% return with low risk is better than 22% with extreme risk. This is a fundamental concept in portfolio management.</li>
+      <li><strong>Run this prompt:</strong>
+        <div class="pb" style="margin:8px 0 0">Acting as a portfolio analyst, explain these risk-adjusted return metrics to a finance student using a worked example. Use these two stocks throughout:<br><br>
+Stock Alpha: 15% annual return, 10% standard deviation<br>
+Stock Beta: 22% annual return, 25% standard deviation<br>
+Risk-free rate: 5% (10-year government bond)<br><br>
+Explain and calculate for both stocks: (1) Sharpe Ratio &mdash; formula, calculation, which stock wins and why, (2) Standard Deviation &mdash; what it means for a long-term investor, (3) Maximum Drawdown &mdash; define it and explain why it matters more than volatility for emotional investors, (4) Beta (assume Alpha has Beta 0.7, Beta has Beta 1.5) &mdash; what does this mean in a market downturn?<br><br>
+Conclude: which stock should a rational investor prefer and why? Would your answer change for a 1-year horizon vs 20-year horizon?</div>
+      </li>
+      <li><strong>Walk through the Sharpe Ratio calculation live.</strong> Stock Alpha (lower return, better risk-adjusted) vs Stock Beta challenges students&rsquo; instinct to chase the highest return number. This is the mindset shift from retail investor to professional fund manager.</li>
+    </ol>
+  </div>
+</div>
+</div></div>
+<div class="page" id="p9"><div class="inner">
+<h1>Master Cheat Sheet</h1>
+<p class="sub">Every tool, every prompt category, every key concept on one page. Share this with students after the session.</p>
+
+<div class="formula"><span>"Acting as a [Role] &mdash; do this [Task] &mdash; in this [Format]"</span>
+<small>+ Context &nbsp;&middot;&nbsp; + Size Control &nbsp;&middot;&nbsp; + Constraints &nbsp;&middot;&nbsp; + Iterate in the same chat window</small>
+</div>
+
+<h2>5 Refinement Levers</h2>
+<table class="tb">
+<tr><th>Lever</th><th>Question to Ask</th><th>Fix</th></tr>
+<tr><td>1. Relevance</td><td>Is there output I don&rsquo;t need?</td><td>&ldquo;Focus only on X, Y, Z &mdash; ignore everything else&rdquo;</td></tr>
+<tr><td>2. Size</td><td>Too long / too short?</td><td>&ldquo;Maximum 5 bullet points&rdquo; or &ldquo;expand to 300 words&rdquo;</td></tr>
+<tr><td>3. Context</td><td>Does the AI know who I am?</td><td>&ldquo;I am a financial analyst preparing a client brief&rdquo;</td></tr>
+<tr><td>4. Format</td><td>Is the structure right?</td><td>&ldquo;As a table: Name | Score | Reason | Risk&rdquo;</td></tr>
+<tr><td>5. Iterate</td><td>Can I build on the last reply?</td><td>&ldquo;Now add a Risk section to the analysis above&rdquo;</td></tr>
+</table>
+
+<h2>All 20 Tools at a Glance</h2>
+<table class="tb">
+<tr><th>#</th><th>Tool</th><th>Best Use Case</th><th>Free?</th></tr>
+<tr><td>1</td><td>ChatGPT</td><td>Email, research, analysis, formulas, code</td><td><span class="check">&#10003;</span> Basic free</td></tr>
+<tr><td>2</td><td>Google Gemini</td><td>Real-time news research, translation</td><td><span class="check">&#10003;</span> Free</td></tr>
+<tr><td>3</td><td>DeepAI</td><td>Text-to-image generation</td><td><span class="check">&#10003;</span> Free</td></tr>
+<tr><td>4</td><td>HeyGen</td><td>AI avatar video from text scripts</td><td><span class="cross">&#10007;</span> Paid</td></tr>
+<tr><td>5</td><td>Gamma.app</td><td>Full presentations from one prompt</td><td><span class="check">&#10003;</span> Free tier</td></tr>
+<tr><td>6</td><td>Pitch Deck Analyzer</td><td>Score and improve startup pitches</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>7</td><td>Startup Pitch Deck GPT</td><td>Build complete pitch decks</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>8</td><td>Business Blueprint GPT</td><td>GTM plans, revenue models, strategy</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>9</td><td>Lemonade Twist</td><td>B2B lead gen, marketing campaigns</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>10</td><td>Toon CEO Guy</td><td>Brand naming, email sequences</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>11</td><td>VentureGPT</td><td>VC deal evaluation, term sheets</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>12</td><td>Personal Starwatcher</td><td>Deep startup risk profiling, portfolio ranking</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>13</td><td>Boolio Invest</td><td>Quantitative stock screening, backtest logic</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>14</td><td>PortfolioPilot</td><td>Portfolio health check, macro scenarios</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>15</td><td>OnePage Stock Ideas</td><td>News-to-investment briefs, thematic reports</td><td><span class="cross">&#10007;</span> Plus</td></tr>
+<tr><td>16</td><td>PortfoliosLab</td><td>ETF comparison, Sharpe Ratio analysis</td><td><span class="check">&#10003;</span> Free</td></tr>
+</table>
+
+<h2>Role Library for IB &amp; Finance</h2>
+<div class="g3">
+<div class="gc"><h4 style="color:var(--gold)">Research &amp; Analysis</h4><ul>
+<li>equity research analyst</li><li>credit analyst</li><li>quantitative analyst</li><li>macro strategist</li><li>sector specialist</li></ul></div>
+<div class="gc"><h4 style="color:var(--mint)">Investment Banking</h4><ul>
+<li>investment banking associate</li><li>M&amp;A advisor</li><li>DCF modelling expert</li><li>capital markets analyst</li><li>corporate finance director</li></ul></div>
+<div class="gc"><h4 style="color:var(--sky)">Venture Capital</h4><ul>
+<li>senior VC partner</li><li>startup advisor</li><li>pitch deck coach</li><li>VC attorney</li><li>portfolio manager (CFA)</li></ul></div>
+</div>
+
+<div class="c acc"><span class="tag t-pu">The Most Important Lesson</span>
+<p>Every AI tool in this course is only as powerful as the prompt you give it. A weak prompt gives a generic answer. A strong prompt &mdash; with Role, Task, Format, Context, and Constraints &mdash; gives professional-grade output in seconds.</p>
+<p style="margin-bottom:0"><strong>The skill is not in clicking buttons. The skill is in writing the prompt. Master that, and every AI tool becomes 10&times; more powerful for your career in finance.</strong></p>
+</div>
+</div></div>
+
+</div>
+<div class="pbar" id="pb"></div>
+<script>
+const P=["Overview","Best Practices","Email & Research","Excel & VBA","Gemini + Images + Video","Gamma Presentations","Startup Tools","VC Tools","Finance Tools","Cheat Sheet"];
+const nav=document.getElementById('tabNav'),ps=document.querySelectorAll('.page');
+let c=0;
+P.forEach((n,i)=>{const t=document.createElement('div');t.className='tab'+(i===0?' on':'');t.textContent=n;t.onclick=()=>go(i);nav.appendChild(t);});
+function go(i){ps[c].classList.remove('on');nav.children[c].classList.remove('on');c=i;ps[c].classList.add('on');nav.children[c].classList.add('on');ps[c].scrollTop=0;nav.children[c].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});upb();}
+function upb(){const p=ps[c];document.getElementById('pb').style.width=(p.scrollHeight<=p.clientHeight?100:(p.scrollTop/(p.scrollHeight-p.clientHeight)*100))+'%';}
+ps.forEach(p=>p.addEventListener('scroll',upb));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'&&c<P.length-1)go(c+1);if(e.key==='ArrowLeft'&&c>0)go(c-1);});
+upb();
+</script>
+</body>
+</html>
